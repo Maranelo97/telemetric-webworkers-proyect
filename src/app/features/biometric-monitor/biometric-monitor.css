@@ -1,0 +1,62 @@
+:host {
+  display: block;
+  background: #05070a; /* Más profundo */
+  border: 1px solid #1a2433;
+  border-radius: 24px; /* Más redondeado estilo Stitch */
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  height: 100%; /* Ocupa el alto del padre */
+  min-height: 400px; 
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+}
+
+.wave-container {
+  width: 100%;
+  height: calc(100% - 40px); /* Restamos el header */
+  background-image: 
+    linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 204, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px; /* Rejilla más grande para monitor alto */
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Forzamos que el SVG ocupe todo el espacio */
+::ng-deep svg {
+  display: block;
+  overflow: visible;
+}
+
+::ng-deep .hrv-line {
+  filter: drop-shadow(0 0 8px currentColor);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.monitor-header {
+  color: #566573;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  display: flex;
+  types: center;
+  gap: 8px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  background: #00ffcc;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
