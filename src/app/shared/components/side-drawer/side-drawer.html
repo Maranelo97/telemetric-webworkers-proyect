@@ -1,18 +1,15 @@
-<div class="drawer-backdrop" 
-     [class.active]="isOpen()" 
-     (click)="onClose()">
-</div>
-
+<div class="drawer-backdrop" [class.active]="isOpen()" (click)="onClose()"></div>
 <aside class="side-drawer" [class.open]="isOpen()">
   <header class="drawer-header">
     <div class="header-content">
-      <span class="protocol-tag">ENGINE_DIAGNOSTICS</span>
+      <span class="protocol-tag">SYSTEM_OVR_SERVICE</span>
       <h3>{{ title() }}</h3>
     </div>
     <button class="close-btn" (click)="onClose()">×</button>
   </header>
 
   <div class="drawer-body">
+    <ng-template [cdkPortalOutlet]="contentPortal()"></ng-template>
     <ng-content></ng-content>
   </div>
 </aside>

@@ -18,6 +18,7 @@ export class SimulatedTelemetryAdapter implements TelemetryPort {
       horsepower: 520,
       status: 'OPTIMAL',
       powerLevel: 88, // <-- Propiedad faltante añadida
+      modelEngine: '',
       metrics: {
         fuel: 65,
         health: 88,

@@ -1,5 +1,9 @@
 <div class="min-h-screen bg-slate-950 text-slate-100 p-8">
-  <header class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+  <div class="lg:col-span-12">
+    <biometric-monitor></biometric-monitor>
+  </div>
+
+  <header class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 mt-3">
     @for (kpi of store.kpiWidgets(); track kpi.label) {
       <widget type="KPI" [config]="kpi"></widget>
     }
@@ -41,13 +45,8 @@
         View Full Fleet Detail
       </button>
     </div>
-
-    <div class="lg:col-span-11">
+    <div class="lg:col-span-2">
       <map-viewer [locations]="store.locations()"></map-viewer>
-    </div>
-
-    <div class="lg:col-span-12">
-      <biometric-monitor></biometric-monitor>
     </div>
   </div>
 </div>

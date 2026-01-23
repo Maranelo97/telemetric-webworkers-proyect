@@ -1,12 +1,15 @@
 import { Vehicle } from '../../core/models/vehicle.model';
-
+export type EngineModelType = 'generic' | 'mazda' | 'toyota' | 'trucks';
 export const generateFleet = (count: number): Vehicle[] => {
+  const availableModels: EngineModelType[] = ['generic', 'mazda', 'toyota', 'trucks'];
+
   return Array.from({ length: count }, (_, i) => ({
     id: `VHL-${i}`,
     name: `Unit ${i}`,
     horsepower: 450 + i * 10,
     status: i % 5 === 0 ? 'CRITICAL' : 'OPTIMAL',
     powerLevel: 80 + i,
+    modelEngine: availableModels[Math.floor(Math.random() * availableModels.length)],
     metrics: {
       fuel: Math.floor(Math.random() * 100),
       health: Math.floor(Math.random() * 100),

@@ -16,6 +16,8 @@ import { Vehicle } from '../../core/models/vehicle.model';
 import { DriverBiometrics } from '../../core/models/biometrics.model';
 import { TelemetryStore } from '../telemetry-hub/state/telemetry.store';
 import { DataLoader } from '../../shared/components/dataLoader/dataLoader';
+import { EngineViewer } from '../../infrastructure/driving/engine-3d/engine-viewer';
+import { DrawerService } from '../../infrastructure/ui/common/services/drawer';
 
 @Component({
   selector: 'app-unit-diagnostics',
@@ -23,7 +25,7 @@ import { DataLoader } from '../../shared/components/dataLoader/dataLoader';
   templateUrl: './UnitDiagnostics.html',
   styleUrl: './UnitDiagnostics.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DataLoader],
+  imports: [DataLoader, EngineViewer],
 })
 export class UnitDiagnostics implements OnDestroy {
   private route = inject(ActivatedRoute);
@@ -31,6 +33,7 @@ export class UnitDiagnostics implements OnDestroy {
   private charting = inject(CHARTING_PORT);
   private telemetry = inject(TELEMETRY_PORT);
   private store = inject(TelemetryStore);
+  private drawerService = inject(DrawerService);
   isLoading = signal(true);
   isUnitCritical = signal(false);
 
@@ -41,6 +44,7 @@ export class UnitDiagnostics implements OnDestroy {
   unitId = signal<string>(this.route.snapshot.paramMap.get('id') || 'UNKNOWN');
   vehicle = signal<Vehicle | null>(null);
   biometrics = signal<DriverBiometrics | null>(null);
+  isDrawerOpen = signal(false);
 
   private subscriptions = new Subscription();
 
@@ -100,6 +104,18 @@ export class UnitDiagnostics implements OnDestroy {
     this.router.navigate(['/allFleet']);
   }
 
+  openEngineDetails() {
+    const v = this.vehicle();
+    if (!v) return;
+
+    // Usamos "as any" en el tercer argumento para que TypeScript
+    // nos permita pasar valores planos (boolean/string) que el
+    // método setInput del servicio procesará sin problemas.
+    this.drawerService.open(EngineViewer, `Telemetry: ${v.id}`, {
+      engineModel: 'generic' as any,
+      isCritical: this.isUnitCritical() as any,
+    });
+  }
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }

@@ -6,3 +6,15 @@
   width: 100%;
   border-radius: 1rem;
 }
+
+.drawer-panel {
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: auto !important;
+}
+
+/* Si usas el backdrop del CDK, asegúrate de que se vea */
+.drawer-backdrop-portal {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
