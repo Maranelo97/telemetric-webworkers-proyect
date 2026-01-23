@@ -3,6 +3,7 @@ export interface Vehicle {
   name: string;
   status: 'OPTIMAL' | 'CRITICAL' | 'ROUTING';
   powerLevel: number;
+  modelEngine: string;
   metrics: {
     fuel: number;
     health: number;

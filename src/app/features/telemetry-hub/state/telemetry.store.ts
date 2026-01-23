@@ -52,12 +52,8 @@ export class TelemetryStore {
     this.mapper.mapFleetStats(this.totalVehicles(), this.alerts().length),
   );
 
-onUnitClick(id: string) {
-  this.drawerService.open(id);
-}
-
-closeDrawer() {
-  this.drawerOpen.set(false);
-  this.selectedVehicleId.set(null);
-}
+  closeDrawer() {
+    this.drawerOpen.set(false);
+    this.selectedVehicleId.set(null);
+  }
 }
