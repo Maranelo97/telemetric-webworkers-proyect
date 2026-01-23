@@ -7,7 +7,7 @@
   position: relative;
   overflow: hidden;
   height: 100%; /* Ocupa el alto del padre */
-  min-height: 400px; 
+  min-height: 400px;
   box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
 }
 
@@ -60,7 +60,13 @@
 }
 
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.3; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
 }

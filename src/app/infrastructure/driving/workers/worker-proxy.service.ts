@@ -7,7 +7,7 @@ import { Vehicle } from '../../../core/models/vehicle.model';
 export class WorkerProxyService {
   private worker: Worker | null = null;
   private processedData$ = new Subject<{ fleet: Vehicle[]; alerts: any[] }>();
-  
+
   // Inyectamos el ID de la plataforma
   private platformId = inject(PLATFORM_ID);
 
@@ -21,13 +21,13 @@ export class WorkerProxyService {
       if (typeof Worker !== 'undefined') {
         try {
           this.worker = new Worker(new URL('./telemetry.worker', import.meta.url), {
-            type: 'module'
+            type: 'module',
           });
 
           this.worker.onmessage = ({ data }) => {
             this.processedData$.next({
               fleet: data.processedFleet,
-              alerts: data.alerts
+              alerts: data.alerts,
             });
           };
 

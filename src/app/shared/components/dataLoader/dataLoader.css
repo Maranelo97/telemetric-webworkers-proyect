@@ -59,24 +59,31 @@
 
 /* Animaciones */
 @keyframes scan {
-  0% { top: 0%; }
-  100% { top: 100%; }
+  0% {
+    top: 0%;
+  }
+  100% {
+    top: 100%;
+  }
 }
 
 @keyframes fillProgress {
-  to { width: 100%; }
+  to {
+    width: 100%;
+  }
 }
 
 @keyframes pulse {
-  from { 
-    opacity: 0.8; 
+  from {
+    opacity: 0.8;
   }
-  to { 
-    opacity: 1; 
-    text-shadow: 2px 0 #ff00c1, -2px 0 #00fff9; 
+  to {
+    opacity: 1;
+    text-shadow:
+      2px 0 #ff00c1,
+      -2px 0 #00fff9;
   }
 }
-
 
 .critical-mode .scan-line {
   background-color: rgba(255, 71, 87, 0.5);
@@ -96,6 +103,13 @@
 }
 
 @keyframes pulse-red {
-  from { opacity: 0.8; }
-  to { opacity: 1; text-shadow: 2px 0 #ff4757, -2px 0 #ff0000; }
+  from {
+    opacity: 0.8;
+  }
+  to {
+    opacity: 1;
+    text-shadow:
+      2px 0 #ff4757,
+      -2px 0 #ff0000;
+  }
 }

@@ -1,6 +1,10 @@
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(300%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
 }
 
 :host {
@@ -13,10 +17,10 @@
 }
 
 /* Tipografía especializada para telemetría */
-h3, button {
+h3,
+button {
   letter-spacing: -0.02em;
 }
-
 
 .bg-blue-500 {
   box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);

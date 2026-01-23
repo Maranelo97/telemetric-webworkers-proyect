@@ -15,7 +15,7 @@ import { TELEMETRY_PORT } from '../../core/ports/output/telemetry.port';
 import { Vehicle } from '../../core/models/vehicle.model';
 import { DriverBiometrics } from '../../core/models/biometrics.model';
 import { TelemetryStore } from '../telemetry-hub/state/telemetry.store';
-import { DataLoader } from "../../shared/components/dataLoader/dataLoader";
+import { DataLoader } from '../../shared/components/dataLoader/dataLoader';
 
 @Component({
   selector: 'app-unit-diagnostics',

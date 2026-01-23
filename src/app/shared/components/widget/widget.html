@@ -1,4 +1,6 @@
-<div [class]="containerClasses()" class="p-6 rounded-2xl border transition-all shadow-xl group min-h-50">
+<div
+  [class]="containerClasses()"
+  class="p-6 rounded-2xl border transition-all shadow-xl group min-h-50">
   <div class="flex justify-between items-start mb-4">
     <div>
       <p class="text-slate-400 text-xs uppercase tracking-[0.2em] mb-1">{{ config().label }}</p>
@@ -21,8 +23,7 @@
   @if (config().trend) {
     <p
       [class]="config().trend?.isPositive ? 'text-emerald-400' : 'text-rose-400'"
-      class="text-[10px] mt-2 font-bold"
-    >
+      class="text-[10px] mt-2 font-bold">
       {{ config().trend?.isPositive ? '▲' : '▼' }} {{ config().trend?.value }}% FROM LAST WEEK
     </p>
   }

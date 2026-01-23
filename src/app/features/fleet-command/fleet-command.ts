@@ -7,4 +7,4 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrl: './fleet-command.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FleetCommand { }
+export class FleetCommand {}

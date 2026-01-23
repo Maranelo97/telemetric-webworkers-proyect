@@ -5,6 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "format": "prettier --write \"src/**/*.{ts,html,css,json}\" --loglevel warn",
+    "build-prettier": "npm run format",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:logistic-dashboard-monitoring": "node dist/logistic-dashboard-monitoring/server/server.mjs"
@@ -12,6 +14,9 @@
   "prettier": {
     "printWidth": 100,
     "singleQuote": true,
+    "bracketSameLine": true,
+    "htmlWhitespaceSensitivity": "ignore",
+    "plugins": [],
     "overrides": [
       {
         "files": "*.html",
@@ -58,6 +63,7 @@
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
+    "prettier": "^3.7.4",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.9.2"
   }

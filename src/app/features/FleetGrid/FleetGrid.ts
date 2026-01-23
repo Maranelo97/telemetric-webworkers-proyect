@@ -14,7 +14,7 @@ export class FleetGrid {
   private location = inject(Location);
   private router = inject(Router);
   goBack() {
-     this.router.navigate(['/dashboard']);
+    this.router.navigate(['/dashboard']);
   }
 
   viewDiagnostics(id: string) {

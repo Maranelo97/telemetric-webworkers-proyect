@@ -62,76 +62,87 @@ export class D3ChartingEngine implements ChartingPort {
   /**
    * RENDER WAVE: Osciloscopio HRV en tiempo real
    */
-renderWave(
-  container: HTMLElement,
-  stream$: Observable<{ avgHRV: number; stressZone: string }>,
-): Subscription {
-  // 1. LIMPIEZA SELECTIVA: Solo borramos el SVG, no el overlay HTML
-  d3.select(container).select('svg').remove();
+  renderWave(
+    container: HTMLElement,
+    stream$: Observable<{ avgHRV: number; stressZone: string }>,
+  ): Subscription {
+    // 1. LIMPIEZA SELECTIVA: Solo borramos el SVG, no el overlay HTML
+    d3.select(container).select('svg').remove();
 
-  const width = container.offsetWidth || 600;
-  const height = container.offsetHeight || 200;
-  const points = 40;
-  let data = Array(points).fill(60);
+    const width = container.offsetWidth || 600;
+    const height = container.offsetHeight || 200;
+    const points = 40;
+    let data = Array(points).fill(60);
 
-  // 2. CREACIÓN DEL SVG
-  const svg = d3
-    .select(container)
-    .append('svg')
-    .attr('width', '100%')
-    .attr('height', '100%')
-    .attr('viewBox', `0 0 ${width} ${height}`)
-    .attr('preserveAspectRatio', 'none')
-    .style('position', 'absolute') // Aseguramos que se comporte como capa de fondo
-    .style('top', '0')
-    .style('left', '0');
+    // 2. CREACIÓN DEL SVG
+    const svg = d3
+      .select(container)
+      .append('svg')
+      .attr('width', '100%')
+      .attr('height', '100%')
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('preserveAspectRatio', 'none')
+      .style('position', 'absolute') // Aseguramos que se comporte como capa de fondo
+      .style('top', '0')
+      .style('left', '0');
 
-  const x = d3.scaleLinear().domain([0, points - 1]).range([0, width]);
-  const y = d3.scaleLinear().domain([40, 120]).range([height - 10, 10]);
+    const x = d3
+      .scaleLinear()
+      .domain([0, points - 1])
+      .range([0, width]);
+    const y = d3
+      .scaleLinear()
+      .domain([40, 120])
+      .range([height - 10, 10]);
 
-  const line = d3.line<number>()
-    .x((_, i) => x(i))
-    .y((d) => y(d))
-    .curve(d3.curveMonotoneX);
+    const line = d3
+      .line<number>()
+      .x((_, i) => x(i))
+      .y((d) => y(d))
+      .curve(d3.curveMonotoneX);
 
-  const path = svg.append('path')
-    .attr('fill', 'none')
-    .attr('stroke', '#00ffcc')
-    .attr('stroke-width', 3)
-    .style('filter', 'drop-shadow(0 0 5px #00ffcc)');
+    const path = svg
+      .append('path')
+      .attr('fill', 'none')
+      .attr('stroke', '#00ffcc')
+      .attr('stroke-width', 3)
+      .style('filter', 'drop-shadow(0 0 5px #00ffcc)');
 
-  return stream$.subscribe((val) => {
-    data.push(val.avgHRV);
-    data.shift();
+    return stream$.subscribe((val) => {
+      data.push(val.avgHRV);
+      data.shift();
 
-    const colorMap: any = { LOW: '#00d4ff', OPTIMAL: '#00ffcc', HIGH: '#ff4757' };
-    const color = colorMap[val.stressZone] || '#00ffcc';
+      const colorMap: any = { LOW: '#00d4ff', OPTIMAL: '#00ffcc', HIGH: '#ff4757' };
+      const color = colorMap[val.stressZone] || '#00ffcc';
 
-    // Actualización de la línea
-    path.datum(data)
-      .transition().duration(200).ease(d3.easeLinear)
-      .attr('d', line)
-      .attr('stroke', color);
-
-    // 3. ACTUALIZACIÓN DEL CONTADOR (Ahora existe porque no lo borramos)
-    const hrvNumber = d3.select(container).select('#hrv-number');
-    
-    if (!hrvNumber.empty()) {
-      hrvNumber
+      // Actualización de la línea
+      path
+        .datum(data)
         .transition()
         .duration(200)
-        .style('color', color)
-        .tween('text', function () {
-          const that = d3.select(this);
-          const current = +that.text() || 0;
-          const i = d3.interpolateRound(current, val.avgHRV);
-          return (t: number) => {
-            that.text(i(t));
-          };
-        });
-    }
-  });
-}
+        .ease(d3.easeLinear)
+        .attr('d', line)
+        .attr('stroke', color);
+
+      // 3. ACTUALIZACIÓN DEL CONTADOR (Ahora existe porque no lo borramos)
+      const hrvNumber = d3.select(container).select('#hrv-number');
+
+      if (!hrvNumber.empty()) {
+        hrvNumber
+          .transition()
+          .duration(200)
+          .style('color', color)
+          .tween('text', function () {
+            const that = d3.select(this);
+            const current = +that.text() || 0;
+            const i = d3.interpolateRound(current, val.avgHRV);
+            return (t: number) => {
+              that.text(i(t));
+            };
+          });
+      }
+    });
+  }
   /**
    * RENDER G-FORCE: Vector de inercia
    */

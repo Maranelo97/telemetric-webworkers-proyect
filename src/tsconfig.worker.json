@@ -5,7 +5,5 @@
     "lib": ["es2018", "webworker"],
     "types": []
   },
-  "include": [
-    "app/**/*.worker.ts"
-  ]
+  "include": ["app/**/*.worker.ts"]
 }

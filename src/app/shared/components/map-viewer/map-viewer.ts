@@ -8,7 +8,7 @@ import {
   AfterViewInit,
 } from '@angular/core';
 import { MAP_STRATEGY } from '../../../core/ports/output/map-strategy.port';
-import { Router } from '@angular/router'
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'map-viewer',

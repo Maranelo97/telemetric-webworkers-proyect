@@ -15,9 +15,8 @@ circle {
   box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
 }
 
-
 .min-h-screen::before {
-  content: "";
+  content: '';
   position: absolute;
   top: -100%;
   left: 0;
@@ -29,8 +28,12 @@ circle {
 }
 
 @keyframes scan {
-  0% { top: -100%; }
-  100% { top: 100%; }
+  0% {
+    top: -100%;
+  }
+  100% {
+    top: 100%;
+  }
 }
 
 /* Brillo Neón para el ID */
@@ -38,21 +41,21 @@ circle {
   text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
 }
 
-
-#radarContainer, #gForceContainer {
+#radarContainer,
+#gForceContainer {
   opacity: 0;
   animation: chartEnter 1s ease-out forwards;
   animation-delay: 0.5s;
 }
 
 @keyframes chartEnter {
-  from { 
-    opacity: 0; 
-    transform: translateY(10px) scale(0.95); 
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
     filter: blur(10px);
   }
-  to { 
-    opacity: 1; 
+  to {
+    opacity: 1;
     transform: translateY(0) scale(1);
     filter: blur(0);
   }

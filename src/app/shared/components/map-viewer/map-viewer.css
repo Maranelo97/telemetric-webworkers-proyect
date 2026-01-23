@@ -13,12 +13,25 @@
   box-shadow: 0 0 10px currentColor;
 }
 
-::ng-deep .marker-dot.optimal { color: #00ffcc; background: #00ffcc; }
-::ng-deep .marker-dot.critical { color: #ff4757; background: #ff4757; animation: pulse 1s infinite; }
+::ng-deep .marker-dot.optimal {
+  color: #00ffcc;
+  background: #00ffcc;
+}
+::ng-deep .marker-dot.critical {
+  color: #ff4757;
+  background: #ff4757;
+  animation: pulse 1s infinite;
+}
 
 @keyframes pulse {
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(2.5); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
 }
 
 :host ::ng-deep .leaflet-interactive {
@@ -54,7 +67,7 @@
   background: #0f172a !important;
 }
 
-:host ::ng-deep .leaflet-ant-path, 
+:host ::ng-deep .leaflet-ant-path,
 :host ::ng-deep .leaflet-interactive[stroke-dasharray] {
   filter: drop-shadow(0 0 3px currentColor);
   stroke-linecap: round;
@@ -67,6 +80,10 @@
 }
 
 @keyframes line-flow {
-  from { stroke-dashoffset: 100; }
-  to { stroke-dashoffset: 0; }
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
