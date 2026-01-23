@@ -1,97 +1,106 @@
-import { Component, OnInit, inject, afterNextRender, PLATFORM_ID, ChangeDetectionStrategy, signal } from '@angular/core';
-import * as d3 from 'd3';
+import {
+  Component,
+  inject,
+  afterNextRender,
+  ChangeDetectionStrategy,
+  signal,
+  ViewChild,
+  ElementRef,
+  OnDestroy,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { CHARTING_PORT } from '../../core/ports/visuals/charting.port';
+import { TELEMETRY_PORT } from '../../core/ports/output/telemetry.port';
+import { Vehicle } from '../../core/models/vehicle.model';
+import { DriverBiometrics } from '../../core/models/biometrics.model';
+import { TelemetryStore } from '../telemetry-hub/state/telemetry.store';
+import { DataLoader } from "../../shared/components/dataLoader/dataLoader";
+
 @Component({
   selector: 'app-unit-diagnostics',
-  imports: [],
+  standalone: true,
   templateUrl: './UnitDiagnostics.html',
   styleUrl: './UnitDiagnostics.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [DataLoader],
 })
-
-export class UnitDiagnostics {
-private route = inject(ActivatedRoute);
+export class UnitDiagnostics implements OnDestroy {
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private charting = inject(CHARTING_PORT);
+  private telemetry = inject(TELEMETRY_PORT);
+  private store = inject(TelemetryStore);
+  isLoading = signal(true);
+  isUnitCritical = signal(false);
 
-unitId = signal<string>(this.route.snapshot.paramMap.get('id') || 'UNKNOWN');
+  @ViewChild('radarContainer') radarContainer!: ElementRef;
+  @ViewChild('gForceContainer') gForceContainer!: ElementRef;
+
+  // Signals para la UI
+  unitId = signal<string>(this.route.snapshot.paramMap.get('id') || 'UNKNOWN');
+  vehicle = signal<Vehicle | null>(null);
+  biometrics = signal<DriverBiometrics | null>(null);
+
+  private subscriptions = new Subscription();
 
   constructor() {
+    // 1. Cargar datos base del vehículo
+    this.telemetry.getVehicleDetail(this.unitId()).subscribe((v) => this.vehicle.set(v));
 
-    
     afterNextRender(() => {
-      this.createRadarChart();
-      this.createGForceMonitor();
+      if (this.radarContainer?.nativeElement && this.gForceContainer?.nativeElement) {
+        this.initDynamicVisuals();
+      }
     });
   }
-createRadarChart() {
-    const data = [
-      { axis: "Seguridad", value: 0.9 },
-      { axis: "Consumo", value: 0.85 },
-      { axis: "Puntualidad", value: 0.7 },
-      { axis: "Cuidado", value: 0.95 },
-      { axis: "Velocidad", value: 0.6 }
-    ];
 
-    const width = 250, height = 250;
-    const svg = d3.select("#radarChart")
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .append("g")
-      .attr("transform", `translate(${width/2},${height/2})`);
+  ngOnInit() {
+    const id = this.route.snapshot.paramMap.get('id');
 
-    // Lógica para dibujar el Radar (Spider Chart)
-    // Usamos líneas neón y círculos de fondo
-    const rScale = d3.scaleLinear().domain([0, 1]).range([0, 100]);
-    
-    // Dibujar niveles (círculos de fondo)
-    svg.selectAll(".levels")
-       .data([0.2, 0.4, 0.6, 0.8, 1])
-       .enter().append("circle")
-       .attr("r", d => rScale(d))
-       .attr("fill", "none")
-       .attr("stroke", "rgba(255,255,255,0.05)");
+    // Buscamos en el store si esta unidad es crítica
+    const unit = this.store.fleet().find((u) => u.id === id);
+    if (unit?.status === 'CRITICAL') {
+      this.isUnitCritical.set(true);
+    }
 
-    // Dibujar el área del chofer (en indigo brillante)
-    const line = d3.lineRadial<{axis: string, value: number}>()
-      .radius(d => rScale(d.value))
-      .angle((d, i) => i * (2 * Math.PI / data.length))
-      .curve(d3.curveLinearClosed);
-
-    svg.append("path")
-       .datum(data)
-       .attr("d", line)
-       .attr("fill", "rgba(79, 70, 229, 0.3)")
-       .attr("stroke", "#6366f1")
-       .attr("stroke-width", 2)
-       .style("filter", "drop-shadow(0 0 5px #6366f1)");
+    setTimeout(() => {
+      this.isLoading.set(false);
+    }, 1800);
   }
 
-  createGForceMonitor() {
-    // Un simple vector visual que se mueve
-    const width = 200, height = 200;
-    const svg = d3.select("#gForceChart")
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height);
+  private initDynamicVisuals() {
+    // 1. Radar Dinámico (Basado en el stream de biometría)
+    const biometrics$ = this.telemetry.streamEngineHealth();
 
-    // Grid circular de G-Force
-    svg.append("circle").attr("cx", 100).attr("cy", 100).attr("r", 80).attr("fill", "none").attr("stroke", "rgba(255,255,255,0.1)");
-    svg.append("circle").attr("cx", 100).attr("cy", 100).attr("r", 40).attr("fill", "none").attr("stroke", "rgba(255,255,255,0.1)");
-    
-    // Punto central (El vehículo)
-    svg.append("circle").attr("cx", 100).attr("cy", 100).attr("r", 4).attr("fill", "#6366f1");
+    this.subscriptions.add(
+      biometrics$.subscribe((data) => {
+        this.biometrics.set(data);
 
-    // Vector de inercia (G-Force)
-    svg.append("line")
-       .attr("x1", 100).attr("y1", 100)
-       .attr("x2", 140).attr("y2", 60) // Esto sería dinámico
-       .attr("stroke", "#ef4444")
-       .attr("stroke-width", 3)
-       .attr("marker-end", "url(#arrowhead)");
+        // Mapeamos los datos dinámicos al Radar (Imagen 5: Performance Pillars)
+        const v = this.vehicle();
+        const dynamicStats = [
+          { axis: 'Atención', value: data.attentionLevel / 100 },
+          { axis: 'Frenado', value: (v?.metrics.brakingPrecision || 78) / 100 },
+          { axis: 'Consumo', value: (v?.metrics.fuel || 92) / 100 },
+          { axis: 'Estrés', value: data.stressZone === 'OPTIMAL' ? 0.9 : 0.4 },
+          { axis: 'Salud', value: (v?.metrics.health || 85) / 100 },
+        ];
+
+        this.charting.renderRadar(this.radarContainer.nativeElement, dynamicStats);
+      }),
+    );
+
+    // 2. G-Force (Inercia viva - Imagen 4: G-Force Vector)
+    const gForce$ = this.telemetry.streamGForce();
+    this.subscriptions.add(this.charting.renderGForce(this.gForceContainer.nativeElement, gForce$));
   }
 
   back() {
     this.router.navigate(['/allFleet']);
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }

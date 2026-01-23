@@ -13,14 +13,18 @@
 
 .wave-container {
   width: 100%;
-  height: calc(100% - 40px); /* Restamos el header */
-  background-image: 
-    linear-gradient(rgba(0, 255, 204, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 204, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px; /* Rejilla más grande para monitor alto */
-  position: relative;
-  display: flex;
-  align-items: center;
+  height: 350px; /* O el alto que desees */
+  position: relative; /* Clave para que el SVG absolute y el overlay funcionen */
+  background: #0a0e14;
+  overflow: hidden;
+}
+
+.monitor-overlay {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  z-index: 10; /* Asegura que el número esté por encima de la línea de D3 */
+  pointer-events: none;
 }
 
 /* Forzamos que el SVG ocupe todo el espacio */

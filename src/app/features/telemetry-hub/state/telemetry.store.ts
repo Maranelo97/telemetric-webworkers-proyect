@@ -7,11 +7,11 @@ import { Vehicle } from '../../../core/models/vehicle.model';
 export class TelemetryStore {
   private monitorFleet = inject(MonitorFleetUsecase);
   private mapper = inject(WidgetMapper);
+  private trajectories = new Map<string, [number, number][]>();
 
   readonly fleet = signal<Vehicle[]>([]);
   readonly alerts = signal<any[]>([]);
   readonly loading = signal<boolean>(true);
-
   readonly totalVehicles = computed(() => this.fleet().length);
   readonly criticalVehicles = computed(
     () => this.fleet().filter((v) => v.status === 'CRITICAL').length,
@@ -25,6 +25,19 @@ export class TelemetryStore {
       this.loading.set(false);
     });
   }
+
+  readonly locations = computed(
+    () =>
+      this.fleet()
+        .map((v) => ({
+          id: v.id,
+          name: v.name,
+          lat: v.location?.lat, // Usamos optional chaining por seguridad
+          lng: v.location?.lng,
+          status: v.status,
+        }))
+        .filter((loc) => loc.lat !== undefined && loc.lng !== undefined), // Limpiamos datos corruptos
+  );
 
   readonly vehicleWidgets = computed(() =>
     this.fleet().map((v) => ({

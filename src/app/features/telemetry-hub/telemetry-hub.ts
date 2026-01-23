@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'telemetry-hub',
-  imports: [CommonModule, Widget, BiometricMonitor],
+  imports: [CommonModule, Widget, BiometricMonitor, MapViewer],
   templateUrl: './telemetry-hub.html',
   styleUrl: './telemetry-hub.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

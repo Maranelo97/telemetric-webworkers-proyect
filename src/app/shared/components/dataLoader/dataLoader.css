@@ -1,0 +1,101 @@
+.scanner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  background-color: #000000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Courier New', Courier, monospace;
+  overflow: hidden;
+}
+
+/* Línea de escaneo láser */
+.scan-line {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 20px #6366f1;
+  animation: scan 2s linear infinite;
+}
+
+.glitch-text {
+  color: #6366f1;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 0.3em;
+  margin-bottom: 1rem;
+  position: relative;
+  animation: pulse 0.1s infinite alternate;
+}
+
+/* Barra de progreso estilo retro */
+.progress-bar-container {
+  width: 256px;
+  height: 4px;
+  background-color: #0f172a;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  margin-top: 1rem;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #6366f1;
+  width: 0%;
+  animation: fillProgress 1.5s ease-in-out forwards;
+}
+
+.status-msg {
+  color: #475569;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+/* Animaciones */
+@keyframes scan {
+  0% { top: 0%; }
+  100% { top: 100%; }
+}
+
+@keyframes fillProgress {
+  to { width: 100%; }
+}
+
+@keyframes pulse {
+  from { 
+    opacity: 0.8; 
+  }
+  to { 
+    opacity: 1; 
+    text-shadow: 2px 0 #ff00c1, -2px 0 #00fff9; 
+  }
+}
+
+
+.critical-mode .scan-line {
+  background-color: rgba(255, 71, 87, 0.5);
+  box-shadow: 0 0 20px #ff4757;
+}
+
+.critical-mode .glitch-text {
+  color: #ff4757;
+}
+
+.critical-mode .progress-fill {
+  background-color: #ff4757;
+}
+
+.critical-mode .glitch-text {
+  animation: pulse-red 0.1s infinite alternate;
+}
+
+@keyframes pulse-red {
+  from { opacity: 0.8; }
+  to { opacity: 1; text-shadow: 2px 0 #ff4757, -2px 0 #ff0000; }
+}

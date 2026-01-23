@@ -1,22 +1,23 @@
 import { Vehicle } from "../../core/models/vehicle.model";
 
-export function generateFleet(count: number): Vehicle[] {
-  const statuses: Vehicle['status'][] = ['OPTIMAL', 'ROUTING', 'CRITICAL'];
-
+export const generateFleet = (count: number): Vehicle[] => {
   return Array.from({ length: count }, (_, i) => ({
-    id: `TRK-${800 + i}`,
-    name: `HEAVY HAULER VH-${i.toString().padStart(2, '0')}`,
-    horsepower: 450,
-    status: statuses[Math.floor(Math.random() * statuses.length)],
+    id: `VHL-${i}`,
+    name: `Unit ${i}`,
+    horsepower: 450 + (i * 10),
+    status: i % 5 === 0 ? 'CRITICAL' : 'OPTIMAL',
+    powerLevel: 80 + i,
     metrics: {
       fuel: Math.floor(Math.random() * 100),
-      health: Math.floor(90 + Math.random() * 10),
-      rpm: Math.floor(1500 + Math.random() * 1000),
-      speed: Math.floor(60 + Math.random() * 20)
+      health: Math.floor(Math.random() * 100),
+      rpm: 2000 + (Math.random() * 500),
+      speed: 60 + (Math.random() * 20),
+      temp: 90 + (Math.random() * 30),
+      brakingPrecision: 80 
     },
     location: {
-      lat: 37.7749 + (Math.random() * 0.05),
-      lng: -122.4194 + (Math.random() * 0.05)
+      lat: 37.7749 + (Math.random() - 0.5) * 0.1,
+      lng: -122.4194 + (Math.random() - 0.5) * 0.1,
     }
   }));
-}
+};

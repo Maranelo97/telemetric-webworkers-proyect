@@ -1,13 +1,15 @@
 export interface Vehicle {
   id: string;
-  name: string;        
-  horsepower: number;
+  name: string;
   status: 'OPTIMAL' | 'CRITICAL' | 'ROUTING';
+  powerLevel: number;
   metrics: {
-    fuel: number;      
-    health: number;      
+    fuel: number;
+    health: number;
     rpm: number;
     speed: number;
+    temp: number;
+    brakingPrecision: number;
   };
   location: {
     lat: number;

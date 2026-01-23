@@ -3,7 +3,7 @@
     <div>
       <button
         (click)="goBack()"
-        class="text-indigo-400 text-xs cursor-pointer  font-black uppercase tracking-[0.3em] mb-4 flex items-center gap-2 hover:text-white transition-colors"
+        class="text-indigo-400 text-xs cursor-pointer font-black uppercase tracking-[0.3em] mb-4 flex items-center gap-2 hover:text-white transition-colors"
       >
         <span class="text-lg">←</span> Back to Command Center
       </button>
@@ -34,10 +34,15 @@
               ID: {{ item.data.id }}
             </span>
             <div class="flex items-center gap-2">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span class="text-[10px] font-black uppercase tracking-widest text-emerald-500">{{
-                item.data.status
-              }}</span>
+              <span
+                class="w-1.5 h-1.5 rounded-full  animate-pulse"
+                [ngClass]="item.data.status === 'CRITICAL' ? 'bg-red-500' : 'bg-emerald-500'"
+              ></span>
+              <span
+                class="text-[10px] font-black uppercase tracking-widest"
+                [ngClass]="item.data.status === 'CRITICAL' ? 'text-red-500' : 'text-emerald-500'"
+                >{{ item.data.status }}</span
+              >
             </div>
           </div>
 
@@ -54,7 +59,9 @@
             </div>
             <div class="bg-slate-950/50 p-3 rounded-xl border border-white/5">
               <p class="text-[9px] text-slate-500 uppercase font-bold mb-1">Engine RPM</p>
-              <p class="text-lg font-mono font-bold text-white">{{ item.data.metrics.rpm }}</p>
+              <p class="text-lg font-mono font-bold text-white">
+                {{ item.data.metrics.rpm.toFixed(2) }}
+              </p>
             </div>
           </div>
 
