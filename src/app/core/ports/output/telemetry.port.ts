@@ -7,6 +7,7 @@ export interface TelemetryPort {
   getFleetStream(): Observable<Vehicle[]>;
   getVehicleDetail(id: string): Observable<Vehicle>;
   streamEngineHealth(): Observable<DriverBiometrics>;
+  streamGForce(): Observable<{ x: number; y: number }>;
 }
 
 export const TELEMETRY_PORT = new InjectionToken<TelemetryPort>('TelemetryPort');

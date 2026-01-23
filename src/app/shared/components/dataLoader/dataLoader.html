@@ -1,0 +1,14 @@
+<div class="scanner-overlay" [class.critical-mode]="isCritical()">
+  <div class="scan-line"></div>
+  <div class="loading-content">
+    <div class="glitch-text">
+      {{ isCritical() ? 'CRITICAL_LINK_ESTABLISHED' : 'ESTABLISHING_NEURAL_LINK' }}
+    </div>
+    <div class="progress-bar-container">
+      <div class="progress-fill"></div>
+    </div>
+    <p class="status-msg">
+      {{ isCritical() ? 'WARNING: BIOMETRIC_STRESS_DETECTED' : 'BYPASSING_FIREWALL... OK' }}
+    </p>
+  </div>
+</div>

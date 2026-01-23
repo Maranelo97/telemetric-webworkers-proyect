@@ -1,4 +1,72 @@
 .map-container {
-  height: 500px;
-  z-index: 1;
+  width: 100%;
+  height: 500px; /* O el alto que necesites en tu dashboard */
+  background: #0f172a; /* Color oscuro para evitar el flash blanco */
+  border-radius: 24px;
+}
+
+::ng-deep .marker-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 10px currentColor;
+}
+
+::ng-deep .marker-dot.optimal { color: #00ffcc; background: #00ffcc; }
+::ng-deep .marker-dot.critical { color: #ff4757; background: #ff4757; animation: pulse 1s infinite; }
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+:host ::ng-deep .leaflet-interactive {
+  filter: drop-shadow(0 0 5px currentColor);
+  transition: all 0.3s ease;
+}
+
+/* Animación de pulso para unidades críticas */
+:host ::ng-deep .marker-pulse {
+  animation: radar-pulse 1.5s infinite ease-out;
+  stroke-width: 4px;
+}
+
+@keyframes radar-pulse {
+  0% {
+    stroke-width: 2px;
+    stroke-opacity: 1;
+  }
+  100% {
+    stroke-width: 15px;
+    stroke-opacity: 0;
+  }
+}
+
+/* Estilo del Popup (para que no se vea el blanco de Leaflet) */
+:host ::ng-deep .leaflet-popup-content-wrapper {
+  background: #0f172a !important;
+  border: 1px solid #ffffff20;
+  border-radius: 4px;
+}
+
+:host ::ng-deep .leaflet-popup-tip {
+  background: #0f172a !important;
+}
+
+:host ::ng-deep .leaflet-ant-path, 
+:host ::ng-deep .leaflet-interactive[stroke-dasharray] {
+  filter: drop-shadow(0 0 3px currentColor);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.2s linear;
+}
+
+/* Opcional: Si quieres que la línea parezca moverse */
+:host ::ng-deep .leaflet-interactive[stroke-dasharray] {
+  animation: line-flow 20s linear infinite;
+}
+
+@keyframes line-flow {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
 }
