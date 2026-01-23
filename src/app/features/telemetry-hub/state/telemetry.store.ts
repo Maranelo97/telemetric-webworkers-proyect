@@ -2,12 +2,15 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { MonitorFleetUsecase } from '../../../core/use-cases/monitor-fleet.usecase';
 import { WidgetMapper } from '../../../shared/mappers/widget.mapper';
 import { Vehicle } from '../../../core/models/vehicle.model';
+import { DrawerService } from '../../../infrastructure/ui/common/services/drawer';
 
 @Injectable({ providedIn: 'root' })
 export class TelemetryStore {
   private monitorFleet = inject(MonitorFleetUsecase);
   private mapper = inject(WidgetMapper);
-  private trajectories = new Map<string, [number, number][]>();
+  private drawerService = inject(DrawerService);
+  readonly drawerOpen = signal<boolean>(false);
+  readonly selectedVehicleId = signal<string | null>(null);
 
   readonly fleet = signal<Vehicle[]>([]);
   readonly alerts = signal<any[]>([]);
@@ -48,4 +51,13 @@ export class TelemetryStore {
   readonly kpiWidgets = computed(() =>
     this.mapper.mapFleetStats(this.totalVehicles(), this.alerts().length),
   );
+
+onUnitClick(id: string) {
+  this.drawerService.open(id);
+}
+
+closeDrawer() {
+  this.drawerOpen.set(false);
+  this.selectedVehicleId.set(null);
+}
 }
