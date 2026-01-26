@@ -9,14 +9,23 @@ export class D3ChartingEngine implements ChartingPort {
   /**
    * RENDER RADAR: Skills del conductor
    */
-  renderRadar(container: HTMLElement, data: { axis: string; value: number }[]): void {
+  renderRadar(
+    container: HTMLElement,
+    data: { axis: string; value: number }[],
+    status?: string,
+  ): void {
     d3.select(container).selectAll('*').remove();
 
     const width = container.offsetWidth || 300;
     const height = container.offsetHeight || 300;
-    const margin = 40;
+    const margin = 50;
     const radius = Math.min(width, height) / 2 - margin;
     const angleSlice = (Math.PI * 2) / data.length;
+
+    // --- LÓGICA DE COLOR DINÁMICO ---
+    const isCritical = status === 'CRITICAL';
+    const mainColor = isCritical ? '#ef4444' : '#6366f1';
+    const areaColor = isCritical ? 'rgba(239, 68, 68, 0.3)' : 'rgba(99, 102, 241, 0.2)';
 
     const rScale = d3.scaleLinear().domain([0, 1]).range([0, radius]);
 
@@ -29,34 +38,65 @@ export class D3ChartingEngine implements ChartingPort {
       .append('g')
       .attr('transform', `translate(${width / 2}, ${height / 2})`);
 
-    // Dibujar niveles (Grid circular)
-    const levels = [0.2, 0.4, 0.6, 0.8, 1];
+    // --- EJES Y ETIQUETAS ---
+    const axis = svg.selectAll('.axis').data(data).enter().append('g').attr('class', 'axis');
+
+    axis
+      .append('line')
+      .attr('x1', 0)
+      .attr('y1', 0)
+      .attr('x2', (_, i) => rScale(1.1) * Math.cos(i * angleSlice - Math.PI / 2))
+      .attr('y2', (_, i) => rScale(1.1) * Math.sin(i * angleSlice - Math.PI / 2))
+      .attr('stroke', 'rgba(255,255,255,0.1)');
+
+    axis
+      .append('text')
+      .style('font-size', '10px')
+      .style('font-family', 'monospace')
+      .attr('text-anchor', 'middle')
+      .attr('dy', '0.35em')
+      .attr('x', (_, i) => rScale(1.3) * Math.cos(i * angleSlice - Math.PI / 2))
+      .attr('y', (_, i) => rScale(1.3) * Math.sin(i * angleSlice - Math.PI / 2))
+      .text((d) => d.axis.toUpperCase())
+      .attr('fill', mainColor) // El texto también cambia de color
+      .style('transition', 'fill 0.5s ease');
+
+    // --- GRID CIRCULAR ---
     svg
       .selectAll('.grid-circle')
-      .data(levels)
+      .data([0.2, 0.4, 0.6, 0.8, 1])
       .enter()
       .append('circle')
       .attr('r', (d) => rScale(d))
       .attr('fill', 'none')
-      .attr('stroke', 'rgba(255,255,255,0.05)')
-      .attr('stroke-width', 1);
+      .attr('stroke', 'rgba(255,255,255,0.05)');
 
-    // Línea del Radar
+    // --- POLÍGONO DINÁMICO ---
     const radarLine = d3
       .lineRadial<{ axis: string; value: number }>()
       .radius((d) => rScale(d.value))
       .angle((_, i) => i * angleSlice)
       .curve(d3.curveLinearClosed);
 
-    // Área del Polígono
-    svg
+    const path = svg
       .append('path')
       .datum(data)
       .attr('d', radarLine)
-      .attr('fill', 'rgba(99, 102, 241, 0.2)')
-      .attr('stroke', '#6366f1')
+      .attr('fill', areaColor)
+      .attr('stroke', mainColor)
       .attr('stroke-width', 2)
-      .style('filter', 'drop-shadow(0 0 8px rgba(99, 102, 241, 0.6))');
+      .style('filter', `drop-shadow(0 0 8px ${mainColor})`)
+      .style('transition', 'all 0.5s ease');
+
+    // Si es crítico, añadimos una animación de pulsación
+    if (isCritical) {
+      path
+        .append('animate')
+        .attr('attributeName', 'fill-opacity')
+        .attr('values', '0.2;0.6;0.2')
+        .attr('dur', '2s')
+        .attr('repeatCount', 'indefinite');
+    }
   }
 
   /**

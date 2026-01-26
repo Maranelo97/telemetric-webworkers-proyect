@@ -1,0 +1,42 @@
+<div class="engine-wrapper">
+  <div
+    class="engine-container shadow-lg shadow-indigo-700/50 rounded-sm border border-indigo-500/30">
+    @if (isLoading()) {
+      <div class="loader-overlay">
+        <div class="spinner"></div>
+        <p class="text-indigo-400 font-mono animate-pulse">Sincronizando Modelo 3D...</p>
+      </div>
+    }
+    <div #rendererContainer class="canvas-container" [style.opacity]="isLoading() ? 0 : 1"></div>
+  </div>
+
+  <div class="diagnostic-panel" [class.error-active]="!isLoading()">
+    <div class="status-bar">
+      <span class="dot animate-ping"></span>
+      <span class="label">LIVE DIAGNOSTIC SYSTEM</span>
+    </div>
+
+    <div class="error-content">
+      <div class="error-code">
+        <span class="text-xs text-indigo-400 block uppercase">Error Code</span>
+        <h3 class="text-2xl font-black tracking-tighter text-red-500">SYS_FLR_01</h3>
+      </div>
+
+      <div class="error-details border-l border-white/10 pl-4">
+        <p class="text-white/80 text-sm leading-tight">
+          <span class="text-red-400 font-bold">CRITICAL:</span>
+          Anomalía térmica detectada en el bloque secundario. Pérdida de presión en el circuito de
+          refrigeración.
+        </p>
+        <div class="actions mt-2">
+          <span
+            class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/40">
+            REQUIERE INTERVENCIÓN INMEDIATA
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="scanner-line"></div>
+  </div>
+</div>

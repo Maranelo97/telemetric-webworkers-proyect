@@ -7,11 +7,12 @@ import { SideDrawer } from '../../../../shared/components/side-drawer/side-drawe
 export class DrawerService {
   private overlay = inject(Overlay);
   private overlayRef?: OverlayRef;
+  private contentOverlayRef?: OverlayRef; // Guardamos referencia para limpiar bien
 
   open<T>(component: Type<T>, title: string, inputs: Partial<T>) {
-    this.close(); // Limpiamos cualquier overlay anterior
+    this.close(); // Limpiamos cualquier rastro anterior
 
-    // 1. Crear el Overlay para el SideDrawer (el cascarón)
+    // 1. Crear el Overlay principal (SideDrawer)
     this.overlayRef = this.overlay.create({
       positionStrategy: this.overlay.position().global().right('0').top('0').bottom('0'),
       hasBackdrop: true,
@@ -22,42 +23,40 @@ export class DrawerService {
     const drawerRef = this.overlayRef.attach(drawerPortal);
     drawerRef.instance.title.set(title);
 
-    // 2. CREAR UN SEGUNDO PORTAL OUTLET PARA EL CONTENIDO
-    // En lugar de usar el overlayRef de nuevo, creamos el componente manualmente
-    // para poder moverlo dentro del drawer-body
-    const contentPortal = new ComponentPortal(component);
+    // 2. Crear el Overlay para el contenido (EngineViewer)
+    // Usamos un overlay básico para instanciar el componente
+    this.contentOverlayRef = this.overlay.create();
+    const contentRef = this.contentOverlayRef.attach(new ComponentPortal(component));
 
-    // Usamos el ApplicationRef o un ViewContainerRef, pero lo más simple es:
-    // Crear un overlay secundario o simplemente instanciar el componente.
-
-    // CAMBIO DE ESTRATEGIA: Para evitar el error de "Host already attached"
-    // Vamos a crear el componente del motor usando el ViewContainerRef del SideDrawer
-    // Pero para no complicarte, hagamos esto:
-
-    const contentOverlayRef = this.overlay.create(); // Un overlay invisible temporal
-    const contentRef = contentOverlayRef.attach(contentPortal);
-
-    // Pasar inputs
+    // 3. Inyectar los Inputs (IMPORTANTE: Antes de mover el DOM)
     Object.entries(inputs).forEach(([key, value]) => {
       contentRef.setInput(key, value);
     });
 
-    // Mover el DOM
+    // 4. Mover el componente dentro del SideDrawer
     const drawerBody = drawerRef.location.nativeElement.querySelector('.drawer-body');
     if (drawerBody) {
       drawerBody.appendChild(contentRef.location.nativeElement);
+
+      // Forzamos la detección de cambios para que los Signals (inputs) se activen
+      contentRef.changeDetectorRef.detectChanges();
     }
 
-    // Animación
+    // 5. Animación de entrada
     setTimeout(() => drawerRef.instance.isOpen.set(true), 50);
 
-    // Al cerrar, destruimos ambos
-    drawerRef.instance.close.subscribe(() => {
-      this.close();
-      contentOverlayRef.dispose();
-    });
+    // 6. Lógica de cierre unificada
+    drawerRef.instance.close.subscribe(() => this.close());
+    this.overlayRef.backdropClick().subscribe(() => this.close());
   }
+
   close() {
+    // Cerramos el contenido primero
+    if (this.contentOverlayRef) {
+      this.contentOverlayRef.dispose();
+      this.contentOverlayRef = undefined;
+    }
+    // Cerramos el marco principal
     if (this.overlayRef) {
       this.overlayRef.dispose();
       this.overlayRef = undefined;

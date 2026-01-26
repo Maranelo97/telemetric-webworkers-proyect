@@ -7,28 +7,24 @@ import { generateFleet } from '../../../shared/utils/genFleet';
 
 @Injectable({ providedIn: 'root' })
 export class SimulatedTelemetryAdapter implements TelemetryPort {
+  // 1. GENERACIÓN DINÁMICA: Creamos la flota una sola vez para que sea persistente
+  private readonly _fleet: Vehicle[] = generateFleet(20);
+
   getFleetStream(): Observable<Vehicle[]> {
-    return interval(6000).pipe(map(() => generateFleet(20)));
+    // Emitimos la flota almacenada (cada 6 segundos simula una actualización de red)
+    return interval(6000).pipe(map(() => this._fleet));
   }
 
   getVehicleDetail(id: string): Observable<Vehicle> {
-    return of({
-      id: id,
-      name: `UNIT ${id} - STITCH CORE`,
-      horsepower: 520,
-      status: 'OPTIMAL',
-      powerLevel: 88, // <-- Propiedad faltante añadida
-      modelEngine: '',
-      metrics: {
-        fuel: 65,
-        health: 88,
-        rpm: 1850,
-        speed: 45,
-        temp: 1240, // Asegúrate de que tu interfaz tenga 'temp' o quítalo
-        brakingPrecision: 78, // Asegúrate de que tu interfaz tenga esto
-      },
-      location: { lat: 37.7749, lng: -122.4194 },
-    });
+    // 2. BUSQUEDA DINÁMICA: Buscamos el vehículo real por ID en la flota generada
+    const vehicle = this._fleet.find((v) => v.id === id);
+
+    if (!vehicle) {
+      // Si no existe (caso raro), lanzamos error para debuguear rápido
+      throw new Error(`Vehicle with ID ${id} not found in Simulation Database`);
+    }
+
+    return of(vehicle);
   }
 
   streamEngineHealth(): Observable<DriverBiometrics> {
@@ -39,7 +35,6 @@ export class SimulatedTelemetryAdapter implements TelemetryPort {
         avgHRV: Math.floor(65 + Math.random() * 15),
         blinkRate: Math.random() * 2,
         stressZone: Math.random() > 0.8 ? 'HIGH' : 'OPTIMAL',
-        // 🔥 PROPIEDADES FALTANTES AÑADIDAS:
         gForce: { x: 0, y: 0 },
         postureScore: 95,
         cervicalLoad: 7.2,

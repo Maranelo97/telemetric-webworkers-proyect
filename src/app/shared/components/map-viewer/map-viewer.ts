@@ -34,24 +34,21 @@ export class MapViewer implements AfterViewInit, OnDestroy {
     });
   }
 
-  ngAfterViewInit() {
-    // Inicializar Leaflet
-    this.mapStrategy.initialize('main-map', [37.7749, -122.4194], 13);
+  async ngAfterViewInit() {
+    // 1. ESPERAR a que el mapa se inicialice realmente
+    await this.mapStrategy.initialize('main-map', [37.7749, -122.4194], 13);
 
     if (this.mapStrategy.onMarkerClick) {
       this.mapStrategy.onMarkerClick((unitId: string) => {
-        // Navegamos a la ruta de detalles usando el ID del vehículo
         this.router.navigate(['/diagnostics/', unitId]);
       });
     }
 
-    // Pequeño timeout o microtask para asegurar que el motor de Leaflet pintó el contenedor
-    setTimeout(() => {
-      this.isMapReady = true;
-      if (this.locations().length > 0) {
-        this.mapStrategy.updateMarkers(this.locations());
-      }
-    }, 100);
+    // Ya no necesitamos un timeout a ciegas, el await de arriba asegura que L ya existe
+    this.isMapReady = true;
+    if (this.locations().length > 0) {
+      this.mapStrategy.updateMarkers(this.locations());
+    }
   }
 
   ngOnDestroy() {

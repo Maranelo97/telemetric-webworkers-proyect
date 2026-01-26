@@ -2,7 +2,7 @@ import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface ChartingPort {
-  renderRadar(container: HTMLElement, data: any): void;
+  renderRadar(container: HTMLElement, data: any, status?: string): void;
   renderWave(container: HTMLElement, stream$: Observable<any>): void;
   renderGForce(container: HTMLElement, data: any): void;
 }

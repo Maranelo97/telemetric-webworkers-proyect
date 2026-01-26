@@ -5,7 +5,7 @@ import { Widget } from '../../shared/components/widget/widget';
 import { MapViewer } from '../../shared/components/map-viewer/map-viewer';
 import { BiometricMonitor } from '../biometric-monitor/biometric-monitor';
 import { Router } from '@angular/router';
-import { EngineViewer } from '../../infrastructure/driving/engine-3d/engine-viewer';
+import { EngineViewer } from '../UnitDiagnostics/engine-3d/engine-viewer';
 
 @Component({
   selector: 'telemetry-hub',

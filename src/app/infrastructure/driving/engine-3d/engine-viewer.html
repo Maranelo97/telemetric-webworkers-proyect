@@ -1,9 +1,0 @@
-<div class="engine-container">
-  @if (isLoading()) {
-    <div class="loader-overlay">
-      <div class="spinner"></div>
-      <p>Sincronizando Telemetría 3D...</p>
-    </div>
-  }
-  <div #rendererContainer class="canvas-container" [style.opacity]="isLoading() ? 0 : 1"></div>
-</div>

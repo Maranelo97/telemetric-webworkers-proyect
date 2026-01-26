@@ -1,5 +1,9 @@
 :host {
   display: block;
+  /* CRUCIAL: Esto evita que los elementos posicionados fuera del host 
+     generen scroll en el body o en el componente padre */
+  overflow: hidden;
+  position: relative;
 }
 
 circle {
@@ -15,24 +19,38 @@ circle {
   box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
 }
 
+.min-h-screen {
+  position: relative;
+  /* Asegura que el overflow se controle también a nivel de clase si el host falla */
+  overflow: hidden;
+}
+
 .min-h-screen::before {
   content: '';
   position: absolute;
-  top: -100%;
+  /* Cambiamos el inicio: no hace falta que empiece tan arriba */
+  top: -25%;
   left: 0;
   width: 100%;
-  height: 20%;
-  background: linear-gradient(to bottom, transparent, rgba(99, 102, 241, 0.05), transparent);
+  height: 25%; /* Un poco más de cuerpo para el degradado */
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(99, 102, 241, 0.15),
+    /* Un poco más de "punch" */ transparent
+  );
   animation: scan 3s linear infinite;
   pointer-events: none;
+  z-index: 50; /* Que pase por encima del contenido técnico */
 }
 
 @keyframes scan {
   0% {
-    top: -100%;
+    transform: translateY(0);
   }
   100% {
-    top: 100%;
+    /* Usar translateY es más eficiente para la GPU que animar 'top' */
+    transform: translateY(500%);
   }
 }
 

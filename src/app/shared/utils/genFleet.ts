@@ -1,7 +1,7 @@
 import { Vehicle } from '../../core/models/vehicle.model';
-export type EngineModelType = 'generic' | 'mazda' | 'toyota' | 'trucks';
+export type EngineModelType = 'generic' | 'mazda' | 'truck';
 export const generateFleet = (count: number): Vehicle[] => {
-  const availableModels: EngineModelType[] = ['generic', 'mazda', 'toyota', 'trucks'];
+  const availableModels: EngineModelType[] = ['generic', 'mazda', 'truck'];
 
   return Array.from({ length: count }, (_, i) => ({
     id: `VHL-${i}`,

@@ -1,20 +1,29 @@
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable, inject } from '@angular/core';
 import { MapStrategy } from '../../../core/ports/output/map-strategy.port';
+import { PlatformAdapter } from '../../driven/Platform/platform.adapter';
 
 @Injectable({ providedIn: 'root' })
 export class LeafletStrategyService implements MapStrategy {
-  private platformId = inject(PLATFORM_ID);
-  private map?: any; // Usamos any para evitar que TS pida el import de L arriba
+  private map?: any;
   private L: any;
   private markerLayer: any;
   private onMarkerClickCallback?: (id: string) => void;
+  private platform = inject(PlatformAdapter);
 
   async initialize(containerId: string, center: [number, number], zoom: number) {
-    // 🔥 SOLO ejecutar si estamos en el Navegador
-    if (isPlatformBrowser(this.platformId)) {
-      // Importación dinámica de Leaflet solo en el cliente
-      this.L = await import('leaflet');
+    if (this.platform.isBrowser) {
+      // 1. Cargamos el módulo
+      const LeafletModule = await import('leaflet');
+
+      // 2. EXTRA: En entornos de producción (Vercel), Leaflet suele venir en .default
+      // Si no existe .map en el objeto principal, lo buscamos en .default
+      this.L = LeafletModule.default || LeafletModule;
+
+      // Verificación de seguridad
+      if (!this.L || !this.L.map) {
+        console.error('❌ Leaflet no se cargó correctamente:', this.L);
+        return;
+      }
 
       this.map = this.L.map(containerId, {
         zoomControl: false,

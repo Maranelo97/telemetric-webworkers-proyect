@@ -16,7 +16,6 @@ import { Vehicle } from '../../core/models/vehicle.model';
 import { DriverBiometrics } from '../../core/models/biometrics.model';
 import { TelemetryStore } from '../telemetry-hub/state/telemetry.store';
 import { DataLoader } from '../../shared/components/dataLoader/dataLoader';
-import { EngineViewer } from '../../infrastructure/driving/engine-3d/engine-viewer';
 import { DrawerService } from '../../infrastructure/ui/common/services/drawer';
 
 @Component({
@@ -25,7 +24,7 @@ import { DrawerService } from '../../infrastructure/ui/common/services/drawer';
   templateUrl: './UnitDiagnostics.html',
   styleUrl: './UnitDiagnostics.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DataLoader, EngineViewer],
+  imports: [DataLoader],
 })
 export class UnitDiagnostics implements OnDestroy {
   private route = inject(ActivatedRoute);
@@ -80,9 +79,8 @@ export class UnitDiagnostics implements OnDestroy {
     this.subscriptions.add(
       biometrics$.subscribe((data) => {
         this.biometrics.set(data);
-
-        // Mapeamos los datos dinámicos al Radar (Imagen 5: Performance Pillars)
         const v = this.vehicle();
+
         const dynamicStats = [
           { axis: 'Atención', value: data.attentionLevel / 100 },
           { axis: 'Frenado', value: (v?.metrics.brakingPrecision || 78) / 100 },
@@ -91,7 +89,11 @@ export class UnitDiagnostics implements OnDestroy {
           { axis: 'Salud', value: (v?.metrics.health || 85) / 100 },
         ];
 
-        this.charting.renderRadar(this.radarContainer.nativeElement, dynamicStats);
+        this.charting.renderRadar(
+          this.radarContainer.nativeElement,
+          dynamicStats,
+          v?.status as string,
+        );
       }),
     );
 
@@ -104,15 +106,15 @@ export class UnitDiagnostics implements OnDestroy {
     this.router.navigate(['/allFleet']);
   }
 
-  openEngineDetails() {
+  async openEngineDetails() {
     const v = this.vehicle();
     if (!v) return;
 
-    // Usamos "as any" en el tercer argumento para que TypeScript
-    // nos permita pasar valores planos (boolean/string) que el
-    // método setInput del servicio procesará sin problemas.
+    // Cargamos el componente solo cuando el usuario hace clic
+    const { EngineViewer } = await import('./engine-3d/engine-viewer');
+
     this.drawerService.open(EngineViewer, `Telemetry: ${v.id}`, {
-      engineModel: 'generic' as any,
+      modelEngine: v.modelEngine as any,
       isCritical: this.isUnitCritical() as any,
     });
   }

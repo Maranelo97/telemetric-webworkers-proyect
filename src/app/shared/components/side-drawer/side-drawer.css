@@ -1,17 +1,32 @@
 .side-drawer {
   position: fixed;
   top: 0;
-  right: -100%; /* Oculto por defecto */
-  width: 450px;
+  right: -100%;
+  width: 100%; /* Por defecto ocupa el ancho total */
+  max-width: 540px; /* Se limita en pantallas grandes */
   height: 100vh;
-  background: rgba(5, 7, 10, 0.95);
+  background: rgba(5, 7, 10, 0.98);
   backdrop-filter: blur(20px);
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-  transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-left: 1px solid rgba(99, 102, 241, 0.3); /* Borde indigo sutil */
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.8);
+  transition: right 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 1000;
   display: flex;
   flex-direction: column;
+}
+
+@media (max-width: 640px) {
+  .side-drawer {
+    max-width: 100vw; /* Asegura que no haya scroll horizontal indeseado */
+  }
+
+  .drawer-body {
+    padding: 12px; /* Menos padding para dar más espacio al canvas */
+  }
+
+  .text-2xl {
+    font-size: 1.25rem; /* Ajustamos título para que no empuje el botón */
+  }
 }
 
 .side-drawer.open {
@@ -53,4 +68,29 @@
   flex: 1;
   overflow-y: auto;
   padding: 20px;
+}
+
+.close-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ef4444; /* Rojo para destacar que es "Cerrar/Salir" */
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #fff;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+  transform: rotate(90deg); /* Efecto dinámico al poner el mouse */
 }

@@ -7,11 +7,9 @@ import {
   ChangeDetectionStrategy,
   NgZone,
   afterNextRender,
-  PLATFORM_ID,
   OnDestroy,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import * as d3 from 'd3';
 import { TELEMETRY_PORT } from '../../core/ports/output/telemetry.port';
 import { CHARTING_PORT } from '../../core/ports/visuals/charting.port';
 import { Subscription } from 'rxjs';

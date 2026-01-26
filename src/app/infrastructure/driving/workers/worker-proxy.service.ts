@@ -1,7 +1,8 @@
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Subject, Observable } from 'rxjs';
 import { Vehicle } from '../../../core/models/vehicle.model';
+import { PlatformAdapter } from '../../driven/Platform/platform.adapter';
 
 @Injectable({ providedIn: 'root' })
 export class WorkerProxyService {
@@ -9,7 +10,7 @@ export class WorkerProxyService {
   private processedData$ = new Subject<{ fleet: Vehicle[]; alerts: any[] }>();
 
   // Inyectamos el ID de la plataforma
-  private platformId = inject(PLATFORM_ID);
+  private platform = inject(PlatformAdapter);
 
   constructor() {
     this.initializeWorker();
@@ -17,7 +18,7 @@ export class WorkerProxyService {
 
   private initializeWorker() {
     // Solo ejecutamos si estamos en el Navegador
-    if (isPlatformBrowser(this.platformId)) {
+    if (this.platform.isBrowser) {
       if (typeof Worker !== 'undefined') {
         try {
           this.worker = new Worker(new URL('./telemetry.worker', import.meta.url), {
