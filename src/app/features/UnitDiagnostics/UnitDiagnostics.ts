@@ -70,6 +70,7 @@ export class UnitDiagnostics implements OnInit, OnDestroy {
     this.unitDiagnostics.getUnitDetails(id).subscribe(({ vehicle, isCritical }) => {
       this.vehicle.set(vehicle);
       this.isUnitCritical.set(isCritical);
+      console.log(this.vehicle()?.modelEngine)
     });
     setTimeout(() => this.isLoading.set(false), 1800);
   }
