@@ -1,15 +1,13 @@
 import { Injectable, ElementRef, inject } from '@angular/core';
 import * as THREE from 'three';
 import { EngineModelType } from '../../../shared/utils/genFleet';
-import { BlueprintStrategy } from '../../../core/models/engine-strategy.model';
-import { ModelLoaderManager } from '../../../infrastructure/driven/ThreeJs/model-loader.manager';
+import { UnitDiagnosticsUseCase } from '../../../core/use-cases/Unit-diagnostics.usecase';
 import { SceneManager } from '../../../infrastructure/driven/ThreeJs/scene.manager';
 
 @Injectable({ providedIn: 'root' })
 export class EngineService {
   private sceneManager!: SceneManager;
-  private modelLoader = new ModelLoaderManager();
-  private strategy = new BlueprintStrategy();
+  private unitDiagnosticsUseCase = inject(UnitDiagnosticsUseCase);
 
   init(container: ElementRef): void {
     // Toda la infraestructura se inicializa en una línea
@@ -20,7 +18,7 @@ export class EngineService {
   }
 
   async loadEngine(modelName: EngineModelType, onLoad: () => void) {
-    const model = await this.modelLoader.load(modelName, this.strategy);
+    const model = await this.unitDiagnosticsUseCase.loadEngineModel(modelName);
 
     // El SceneManager nos da acceso limpio a la escena
     const oldModel = this.sceneManager.scene.getObjectByName('currentEngine');

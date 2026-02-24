@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import 'leaflet/dist/leaflet.css';
+@import '../src/app/shared/styles/index.css';
 
 .map-container {
   height: 400px;
@@ -17,4 +18,8 @@
 .drawer-backdrop-portal {
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
+}
+
+.bg-slate-core__40{
+  background-color: rgba(15, 23, 42, 0.4);
 }

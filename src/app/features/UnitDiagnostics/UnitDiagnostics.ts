@@ -7,16 +7,24 @@ import {
   ViewChild,
   ElementRef,
   OnDestroy,
+  OnInit,
+  AfterViewInit,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { CHARTING_PORT } from '../../core/ports/visuals/charting.port';
+import {
+  HISTORY_REPORTING_PORT,
+  RADAR_CHARTING_PORT,
+  WAVE_CHARTING_PORT,
+  GFORCE_CHARTING_PORT,
+  HISTORILINE_PORT,
+} from '../../core/ports/visuals/charting.port';
 import { TELEMETRY_PORT } from '../../core/ports/output/telemetry.port';
 import { Vehicle } from '../../core/models/vehicle.model';
 import { DriverBiometrics } from '../../core/models/biometrics.model';
-import { TelemetryStore } from '../telemetry-hub/state/telemetry.store';
 import { DataLoader } from '../../shared/components/dataLoader/dataLoader';
 import { DrawerService } from '../../infrastructure/ui/common/services/drawer';
+import { UnitDiagnosticsUseCase } from '../../core/use-cases/Unit-diagnostics.usecase';
 
 @Component({
   selector: 'app-unit-diagnostics',
@@ -26,80 +34,81 @@ import { DrawerService } from '../../infrastructure/ui/common/services/drawer';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DataLoader],
 })
-export class UnitDiagnostics implements OnDestroy {
+export class UnitDiagnostics implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private charting = inject(CHARTING_PORT);
+  private chartingRadar = inject(RADAR_CHARTING_PORT);
+  private chartingG = inject(GFORCE_CHARTING_PORT);
+  private chartingHistoryLine = inject(HISTORILINE_PORT);
   private telemetry = inject(TELEMETRY_PORT);
-  private store = inject(TelemetryStore);
   private drawerService = inject(DrawerService);
+  private historyReporting = inject(HISTORY_REPORTING_PORT);
+  private unitDiagnostics = inject(UnitDiagnosticsUseCase);
+
   isLoading = signal(true);
   isUnitCritical = signal(false);
-
-  @ViewChild('radarContainer') radarContainer!: ElementRef;
-  @ViewChild('gForceContainer') gForceContainer!: ElementRef;
-
-  // Signals para la UI
   unitId = signal<string>(this.route.snapshot.paramMap.get('id') || 'UNKNOWN');
   vehicle = signal<Vehicle | null>(null);
   biometrics = signal<DriverBiometrics | null>(null);
-  isDrawerOpen = signal(false);
+
+  @ViewChild('radarContainer') radarContainer!: ElementRef;
+  @ViewChild('gForceContainer') gForceContainer!: ElementRef;
+  @ViewChild('historyChart') historyChartElement!: ElementRef;
 
   private subscriptions = new Subscription();
 
   constructor() {
-    // 1. Cargar datos base del vehículo
-    this.telemetry.getVehicleDetail(this.unitId()).subscribe((v) => this.vehicle.set(v));
-
     afterNextRender(() => {
-      if (this.radarContainer?.nativeElement && this.gForceContainer?.nativeElement) {
-        this.initDynamicVisuals();
-      }
+      this.initDynamicVisuals();
+      this.initHistoryChart();
     });
   }
 
   ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
+    const id = this.unitId();
 
-    // Buscamos en el store si esta unidad es crítica
-    const unit = this.store.fleet().find((u) => u.id === id);
-    if (unit?.status === 'CRITICAL') {
-      this.isUnitCritical.set(true);
+    this.unitDiagnostics.getUnitDetails(id).subscribe(({ vehicle, isCritical }) => {
+      this.vehicle.set(vehicle);
+      this.isUnitCritical.set(isCritical);
+    });
+    setTimeout(() => this.isLoading.set(false), 1800);
+  }
+
+  private initHistoryChart() {
+    if (this.historyChartElement?.nativeElement) {
+      this.subscriptions.add(
+        this.historyReporting.getMetricHistory(this.unitId(), 'temp').subscribe((data) => {
+          this.chartingHistoryLine.renderHistoryLine(this.historyChartElement.nativeElement, data);
+        }),
+      );
     }
-
-    setTimeout(() => {
-      this.isLoading.set(false);
-    }, 1800);
   }
 
   private initDynamicVisuals() {
-    // 1. Radar Dinámico (Basado en el stream de biometría)
-    const biometrics$ = this.telemetry.streamEngineHealth();
-
+    // Radar
     this.subscriptions.add(
-      biometrics$.subscribe((data) => {
+      this.telemetry.streamEngineHealth().subscribe((data) => {
         this.biometrics.set(data);
         const v = this.vehicle();
-
-        const dynamicStats = [
-          { axis: 'Atención', value: data.attentionLevel / 100 },
-          { axis: 'Frenado', value: (v?.metrics.brakingPrecision || 78) / 100 },
-          { axis: 'Consumo', value: (v?.metrics.fuel || 92) / 100 },
-          { axis: 'Estrés', value: data.stressZone === 'OPTIMAL' ? 0.9 : 0.4 },
-          { axis: 'Salud', value: (v?.metrics.health || 85) / 100 },
-        ];
-
-        this.charting.renderRadar(
-          this.radarContainer.nativeElement,
-          dynamicStats,
-          v?.status as string,
-        );
+        const b = this.biometrics();
+        if (b) {
+          const stats = this.unitDiagnostics.getRadarStats(v, b);
+          const { mainColor, areaColor } = this.unitDiagnostics.getRadarColors(v?.status);
+          this.chartingRadar.renderRadar(
+            this.radarContainer.nativeElement,
+            stats,
+            mainColor,
+            areaColor,
+          );
+        }
       }),
     );
 
-    // 2. G-Force (Inercia viva - Imagen 4: G-Force Vector)
-    const gForce$ = this.telemetry.streamGForce();
-    this.subscriptions.add(this.charting.renderGForce(this.gForceContainer.nativeElement, gForce$));
+    // G-Force
+    const gForce$ = this.unitDiagnostics.getGForceStream();
+    this.subscriptions.add(
+      this.chartingG.renderGForce(this.gForceContainer.nativeElement, gForce$),
+    );
   }
 
   back() {
@@ -109,15 +118,13 @@ export class UnitDiagnostics implements OnDestroy {
   async openEngineDetails() {
     const v = this.vehicle();
     if (!v) return;
-
-    // Cargamos el componente solo cuando el usuario hace clic
     const { EngineViewer } = await import('./engine-3d/engine-viewer');
-
     this.drawerService.open(EngineViewer, `Telemetry: ${v.id}`, {
       modelEngine: v.modelEngine as any,
       isCritical: this.isUnitCritical() as any,
     });
   }
+
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }

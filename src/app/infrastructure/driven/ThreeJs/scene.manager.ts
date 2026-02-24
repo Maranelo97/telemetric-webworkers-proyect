@@ -26,7 +26,7 @@ export class SceneManager {
       0.1,
       1000,
     );
-    this.camera.position.set(1.2, 1.6, 5);
+    this.camera.position.set(1.2, 1.4, 2);
 
     // 4. Controles
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);

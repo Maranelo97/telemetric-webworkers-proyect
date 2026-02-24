@@ -2,7 +2,7 @@
 
 
 src/assets/enginesModels/toyota.glb
-
+.env
 # Compiled output
 /dist
 /tmp

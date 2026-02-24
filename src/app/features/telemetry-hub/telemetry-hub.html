@@ -1,5 +1,7 @@
-<div class="min-h-screen bg-slate-950 text-slate-100 p-8">
-  <div class="lg:col-span-12">
+<div class="min-h-screen bg-slate-950 text-slate-100 p-8 relative overflow-hidden glass-panel">
+  <h1 class="text-slate-500 text-4xl m-3 font-bold">Telemetry - Report</h1>
+
+  <div class="lg:col-span-12 mb-6">
     <biometric-monitor></biometric-monitor>
   </div>
 
@@ -9,9 +11,20 @@
     }
   </header>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-10">
     <div
-      class="lg:col-span-1 bg-slate-900 border border-slate-800 p-8 rounded-2xl flex flex-col justify-between shadow-2xl">
+      class="lg:col-span-1 bg-slate-900 border border-slate-800 p-8 rounded-2xl flex flex-col justify-between shadow-2xl relative group">
+      <div class="absolute top-4 right-4 flex items-center gap-1.5">
+        <span class="relative flex h-2 w-2">
+          <span
+            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        <span class="text-[8px] font-bold text-emerald-500 tracking-tighter uppercase">
+          Signal_Active
+        </span>
+      </div>
+
       <div>
         <div class="flex items-center gap-2 mb-6">
           <div class="w-1.5 h-4 bg-indigo-500 rounded-full"></div>
@@ -33,20 +46,67 @@
             <span class="text-emerald-400 font-mono">94.2%</span>
           </div>
           <div class="w-full bg-slate-850 h-2 rounded-full overflow-hidden border border-slate-800">
-            <div
-              class="bg-linear-to-r from-emerald-600 to-emerald-400 h-full w-[94%] shadow-[0_0_10px_rgba(52,211,153,0.3)]"></div>
+            <div class="bg-linear-to-r h-full w-[94%]"></div>
           </div>
         </div>
       </div>
 
       <button
         (click)="goToFleetGrid()"
-        class="mt-10 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-[11px] font-black uppercase tracking-[0.2em] transition-all transform hover:-translate-y-1 active:scale-95 shadow-lg shadow-indigo-500/20">
-        View Full Fleet Detail
+        class="mt-10 py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-[11px] font-black uppercase tracking-[0.2em] transition-all transform hover:-translate-y-1 shadow-lg shadow-indigo-500/20">
+        View Full Detail
       </button>
+
+      <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-indigo-500/30"></div>
+      <div
+        class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-indigo-500/30"></div>
     </div>
-    <div class="lg:col-span-2">
+
+    <div
+      class="lg:col-span-2 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl relative">
       <map-viewer [locations]="store.locations()"></map-viewer>
+      <div
+        class="absolute bottom-4 left-4 text-[9px] font-mono text-indigo-400/50 bg-slate-950/80 p-1">
+        SYS_NAV_ACTIVE // LOC_DATA_STREAMING
+      </div>
+    </div>
+
+    <div
+      class="lg:col-span-1 bg-black/40 border border-slate-800 rounded-2xl flex flex-col shadow-2xl overflow-hidden">
+      <div class="bg-slate-900/50 p-3 border-b border-slate-800 flex justify-between items-center">
+        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400">
+          Tactical_Log.exe
+        </span>
+        <span class="text-[9px] font-mono text-slate-500">v1.0.4</span>
+      </div>
+
+      <div
+        class="p-4 flex-1 font-mono text-[10px] space-y-2 overflow-y-auto max-h-100 scrollbar-hide">
+        <div class="flex gap-2">
+          <span class="text-slate-600">[05:12:01]</span>
+          <span class="text-emerald-500">SYS:</span>
+          <span class="text-slate-300">Redis Connection established.</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="text-slate-600">[05:12:05]</span>
+          <span class="text-indigo-500">FLEET:</span>
+          <span class="text-slate-300">Syncing 2 units in Sector Alpha.</span>
+        </div>
+        <div class="flex gap-2 animate-pulse">
+          <span class="text-slate-600">[05:12:10]</span>
+          <span class="text-amber-500">WARN:</span>
+          <span class="text-slate-300 font-bold">UNIT-01 High Stress Zone detected.</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="text-slate-600">[05:12:12]</span>
+          <span class="text-emerald-500">GPS:</span>
+          <span class="text-slate-300">Coordinates updated for GEN-99.</span>
+        </div>
+        <div class="flex gap-1 items-center">
+          <span class="text-indigo-500">></span>
+          <span class="w-1.5 h-3 bg-indigo-500 animate-bounce"></span>
+        </div>
+      </div>
     </div>
   </div>
 </div>

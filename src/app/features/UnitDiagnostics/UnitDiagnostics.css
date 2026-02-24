@@ -44,15 +44,6 @@ circle {
   z-index: 50; /* Que pase por encima del contenido técnico */
 }
 
-@keyframes scan {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    /* Usar translateY es más eficiente para la GPU que animar 'top' */
-    transform: translateY(500%);
-  }
-}
 
 /* Brillo Neón para el ID */
 .text-indigo-500 {
@@ -77,4 +68,14 @@ circle {
     transform: translateY(0) scale(1);
     filter: blur(0);
   }
+}
+
+
+/* En tu UnitDiagnostics.css */
+#historyChart {
+  cursor: crosshair;
+}
+
+.grid line {
+  stroke: #1e293b; /* Color sutil para las líneas de la rejilla */
 }

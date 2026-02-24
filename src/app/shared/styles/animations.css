@@ -1,0 +1,22 @@
+@keyframes scan {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    /* Usar translateY es más eficiente para la GPU que animar 'top' */
+    transform: translateY(500%);
+  }
+}
+
+@keyframes chartEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}

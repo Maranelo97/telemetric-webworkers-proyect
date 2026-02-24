@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { TELEMETRY_PORT } from '../../core/ports/output/telemetry.port';
-import { CHARTING_PORT } from '../../core/ports/visuals/charting.port';
+import { WAVE_CHARTING_PORT } from '../../core/ports/visuals/charting.port';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -22,7 +22,7 @@ import { Subscription } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BiometricMonitor implements OnDestroy {
-  private charting = inject(CHARTING_PORT);
+  private chartingWave = inject(WAVE_CHARTING_PORT);
   private telemetry = inject(TELEMETRY_PORT);
   private sub = new Subscription();
 
@@ -32,7 +32,7 @@ export class BiometricMonitor implements OnDestroy {
     afterNextRender(() => {
       // Pasamos el stream directamente al Engine
       const stream$ = this.telemetry.streamEngineHealth();
-      this.sub.add(this.charting.renderWave(this.container.nativeElement, stream$));
+      this.sub.add(this.chartingWave.renderWave(this.container.nativeElement, stream$));
     });
   }
 

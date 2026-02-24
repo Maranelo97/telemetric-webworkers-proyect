@@ -60,26 +60,15 @@
               [attr.stroke-dashoffset]="660 - (660 * (biometrics()?.attentionLevel || 0)) / 100"
               stroke-linecap="round"
               class="drop-shadow-[0_0_15px_rgba(59,130,246,0.6)] transition-all duration-1000" />
-            <defs>
-              <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#4f46e5" />
-                <stop offset="100%" stop-color="#06b6d4" />
-              </linearGradient>
-            </defs>
           </svg>
           <div class="absolute inset-0 flex items-center justify-center">
             <div class="w-40 h-40 rounded-full border-2 border-indigo-500/30 p-2">
               <img
                 src="assets/img/av.svg"
-                class="w-full h-full rounded-full grayscale group-hover:grayscale-0 transition-all duration-700 object-cover shadow-inner" />
+                class="w-full h-full rounded-full grayscale group-hover:grayscale-0 transition-all duration-700 object-cover" />
             </div>
           </div>
-          <div
-            class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-indigo-600 px-6 py-1 rounded-full font-black italic text-[11px] shadow-lg">
-            POWER LEVEL {{ vehicle()?.powerLevel || '--' }}
-          </div>
         </div>
-
         <div class="text-center">
           <h1 class="text-4xl font-black tracking-tighter italic uppercase text-white mb-2">
             Alex Rivera
@@ -91,7 +80,7 @@
         </div>
       </div>
 
-      <div class="bg-slate-900/40 p-6 rounded-4xl border border-white/5">
+      <div class="bg-slate-core__40 p-6 rounded-4xl border border-white/5">
         <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 italic">
           // Skill_Architecture
         </h4>
@@ -106,16 +95,10 @@
             // G-Force_Vector
           </h4>
           <div #gForceContainer class="h-48 flex items-center justify-center"></div>
-          <div class="absolute bottom-4 right-6 text-right">
-            <p class="text-[8px] text-slate-500 uppercase">Attention_Lvl</p>
-            <p class="text-xl font-mono text-indigo-500 font-black">
-              {{ biometrics()?.attentionLevel }}%
-            </p>
-          </div>
         </div>
 
         <div
-          class="bg-slate-900/40 p-6 rounded-4xl border border-white/5 group hover:bg-slate-900/60 transition-all">
+          class="bg-slate-core__40 p-6 rounded-4xl border border-white/5 group hover:bg-slate-900/60 transition-all">
           <div class="flex justify-between items-start mb-6">
             <span class="text-[10px] font-black text-indigo-400 tracking-tighter uppercase">
               Fuel Analytics
@@ -134,9 +117,6 @@
               class="h-full bg-linear-to-r from-indigo-600 to-cyan-400 rounded-full shadow-[0_0_15px_rgba(79,70,229,0.5)] transition-all duration-500"
               [style.width.%]="vehicle()?.metrics?.fuel || 0"></div>
           </div>
-          <p class="text-[9px] font-bold text-emerald-500">
-            LIVE_HRV: {{ biometrics()?.avgHRV }}ms
-          </p>
         </div>
       </div>
 
@@ -144,7 +124,7 @@
         class="bg-slate-900/20 rounded-[40px] border border-white/5 p-8 relative overflow-hidden">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-[11px] font-black tracking-[0.5em] text-slate-400 uppercase italic">
-            Threat_Registry // Infracciones
+            // Threat_Registry // Infracciones
           </h3>
           <div class="flex gap-2">
             <span
@@ -156,38 +136,13 @@
           </div>
         </div>
 
-        <div class="space-y-4">
-          @if (vehicle()?.status === 'CRITICAL') {
-            <div
-              class="group flex items-center gap-6 p-5 bg-linear-to-r from-red-500/10 to-transparent border-l-4 border-red-500 rounded-r-2xl animate-pulse">
-              <div class="font-mono text-[10px] text-red-400">ALERT_CORE</div>
-              <div class="flex-1">
-                <h5 class="text-xs font-black uppercase tracking-widest text-white">
-                  Critical Engine Heat
-                </h5>
-                <p class="text-[10px] text-slate-500 font-mono">
-                  Temperature: {{ vehicle()?.metrics?.temp }}°C // Immediate Check Required
-                </p>
-              </div>
-            </div>
-          } @else {
-            <div
-              class="p-5 text-center border border-dashed border-white/10 rounded-2xl opacity-30">
-              <p class="text-[10px] font-mono uppercase tracking-widest">
-                No active threats detected
-              </p>
-            </div>
-          }
-        </div>
-
         <div
+          (click)="openEngineDetails()"
           class="mt-6 bg-linear-to-br from-slate-900/60 to-indigo-950/20 rounded-[40px] border border-white/5 p-8 relative overflow-hidden group cursor-pointer hover:border-indigo-500/50 transition-all duration-500">
           <div
             class="absolute -right-10 -top-10 w-40 h-40 bg-indigo-500/5 rounded-full blur-3xl group-hover:bg-indigo-500/10 transition-colors"></div>
 
-          <div
-            (click)="openEngineDetails()"
-            class="flex items-center justify-between relative z-10">
+          <div class="flex items-center justify-between relative z-10">
             <div>
               <h3
                 class="text-[11px] font-black tracking-[0.5em] text-indigo-400 uppercase italic mb-1">
@@ -214,7 +169,6 @@
               </div>
             </div>
           </div>
-
           <div
             class="mt-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <div class="h-px flex-1 bg-indigo-500/30"></div>
@@ -223,6 +177,28 @@
             </span>
             <div class="h-px flex-1 bg-indigo-500/30"></div>
           </div>
+        </div>
+      </div>
+
+      <div
+        class="bg-slate-900/20 rounded-[40px] border border-white/5 p-8 relative overflow-hidden group">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-[11px] font-black tracking-[0.5em] text-indigo-400 uppercase italic">
+            // Analytics_Cloud_Sync // D3_Node
+          </h3>
+          <div class="flex gap-4">
+            <span class="text-[9px] font-mono text-emerald-500">RANGE: 24H</span>
+            <span class="text-[9px] font-mono text-slate-500 bg-slate-950 px-2 py-1 rounded">
+              SECURE_LINK_ACTIVE
+            </span>
+          </div>
+        </div>
+
+        <div
+          class="h-64 w-full bg-black/60 rounded-3xl border border-white/10 relative overflow-hidden group-hover:border-indigo-500/30 transition-all">
+          <div
+            #historyChart
+            class="w-full h-full opacity-90 group-hover:opacity-100 transition-opacity"></div>
         </div>
       </div>
     </div>
