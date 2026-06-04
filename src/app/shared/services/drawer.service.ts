@@ -1,7 +1,7 @@
 import { inject, Injectable, Type, ComponentRef } from '@angular/core';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
-import { SideDrawer } from '../../../../shared/components/side-drawer/side-drawer';
+import { SideDrawer } from '../components/side-drawer/side-drawer';
 
 @Injectable({ providedIn: 'root' })
 export class DrawerService {

@@ -14,6 +14,9 @@ export class UnitDiagnosticsUseCase {
   private historyReporting = inject(HISTORY_REPORTING_PORT);
   private enginePort = inject(ENGINE_PORT);
 
+  //AQUI ARMAR UN METODO QUE OBTENGA LA INFORMACIÓN Y LA COMPARTA COMO UN SINGAL
+  // READONLY A LOS DEMAS COMPONENTES HIJOS ENTONCES EL PADRE EVITA SUSCRIPCIONES EXTRA
+
   getUnitDetails(unitId: string) {
     // Obtener vehículo y determinar si es crítico
     return this.telemetry

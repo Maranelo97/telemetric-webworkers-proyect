@@ -7,37 +7,35 @@ import {
   ViewChild,
   ElementRef,
   OnDestroy,
-  OnInit,
-  AfterViewInit,
+  OnInit
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import {
   HISTORY_REPORTING_PORT,
-  RADAR_CHARTING_PORT,
-  WAVE_CHARTING_PORT,
   GFORCE_CHARTING_PORT,
   HISTORILINE_PORT,
 } from '../../core/ports/visuals/charting.port';
 import { TELEMETRY_PORT } from '../../core/ports/output/telemetry.port';
 import { Vehicle } from '../../core/models/vehicle.model';
 import { DriverBiometrics } from '../../core/models/biometrics.model';
-import { DataLoader } from '../../shared/components/dataLoader/dataLoader';
-import { DrawerService } from '../../infrastructure/ui/common/services/drawer';
+import { DataLoader } from '../../shared/components/data-loader/data-loader';
+import { DrawerService } from '../../shared/services/drawer.service';
 import { UnitDiagnosticsUseCase } from '../../core/use-cases/Unit-diagnostics.usecase';
-
+import { ChartsDisplayUnit } from './UnitComponents/ChartsDisplayUnit/ChartsDisplayUnit';
+import { SkillRadarDisplay } from './UnitComponents/SkillRadarDisplay/SkillRadarDisplay';
+import { MetricDisplayUnit } from './UnitComponents/MetricDisplayUnit/MetricDisplayUnit';
 @Component({
   selector: 'app-unit-diagnostics',
   standalone: true,
   templateUrl: './UnitDiagnostics.html',
   styleUrl: './UnitDiagnostics.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DataLoader],
+  imports: [DataLoader, SkillRadarDisplay],
 })
 export class UnitDiagnostics implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private chartingRadar = inject(RADAR_CHARTING_PORT);
   private chartingG = inject(GFORCE_CHARTING_PORT);
   private chartingHistoryLine = inject(HISTORILINE_PORT);
   private telemetry = inject(TELEMETRY_PORT);
@@ -50,8 +48,6 @@ export class UnitDiagnostics implements OnInit, OnDestroy {
   unitId = signal<string>(this.route.snapshot.paramMap.get('id') || 'UNKNOWN');
   vehicle = signal<Vehicle | null>(null);
   biometrics = signal<DriverBiometrics | null>(null);
-
-  @ViewChild('radarContainer') radarContainer!: ElementRef;
   @ViewChild('gForceContainer') gForceContainer!: ElementRef;
   @ViewChild('historyChart') historyChartElement!: ElementRef;
 
@@ -70,14 +66,14 @@ export class UnitDiagnostics implements OnInit, OnDestroy {
     this.unitDiagnostics.getUnitDetails(id).subscribe(({ vehicle, isCritical }) => {
       this.vehicle.set(vehicle);
       this.isUnitCritical.set(isCritical);
-      console.log(this.vehicle()?.modelEngine)
+
     });
     setTimeout(() => this.isLoading.set(false), 1800);
   }
 
   private initHistoryChart() {
     if (this.historyChartElement?.nativeElement) {
-      this.subscriptions.add(
+      this.subscriptions.add( 
         this.historyReporting.getMetricHistory(this.unitId(), 'temp').subscribe((data) => {
           this.chartingHistoryLine.renderHistoryLine(this.historyChartElement.nativeElement, data);
         }),
@@ -90,18 +86,6 @@ export class UnitDiagnostics implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.telemetry.streamEngineHealth().subscribe((data) => {
         this.biometrics.set(data);
-        const v = this.vehicle();
-        const b = this.biometrics();
-        if (b) {
-          const stats = this.unitDiagnostics.getRadarStats(v, b);
-          const { mainColor, areaColor } = this.unitDiagnostics.getRadarColors(v?.status);
-          this.chartingRadar.renderRadar(
-            this.radarContainer.nativeElement,
-            stats,
-            mainColor,
-            areaColor,
-          );
-        }
       }),
     );
 

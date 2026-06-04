@@ -53,10 +53,32 @@ this.dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoder
     });
   }
 
-  private normalizeScale(model: THREE.Group) {
+    private normalizeScale(model: THREE.Group) {
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
     const scale = 3 / Math.max(size.x, size.y, size.z);
     model.scale.set(scale, scale, scale);
+  }
+
+  resetModelVisuals(model: THREE.Group): void {
+    model.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        (child.material as THREE.MeshBasicMaterial).color.setHex(0x000000);
+        (child.material as THREE.MeshBasicMaterial).opacity = 0.05;
+      }
+      if (child instanceof THREE.LineSegments) {
+        (child.material as THREE.LineBasicMaterial).color.setHex(0xffffff);
+        (child.material as THREE.LineBasicMaterial).opacity = 0.8;
+      }
+    });
+  }
+
+  highlightComponent(model: THREE.Group, componentName: string, color: number): void {
+    this.resetModelVisuals(model);
+    const target = model.getObjectByName(componentName);
+    if (target instanceof THREE.Mesh) {
+      (target.material as THREE.MeshBasicMaterial).color.setHex(color);
+      (target.material as THREE.MeshBasicMaterial).opacity = 0.6;
+    }
   }
 }
