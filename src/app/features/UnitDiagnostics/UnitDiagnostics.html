@@ -38,8 +38,7 @@
 
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 relative z-10">
     <div class="lg:col-span-4 space-y-8">
-      <div
-        class="bg-slate-900/60 backdrop-blur-xl p-8 rounded-[48px] border border-white/10 shadow-2xl relative overflow-hidden group">
+      <div class="card-glass p-8 relative overflow-hidden group">
         <div class="relative w-56 h-56 mx-auto mb-8">
           <svg class="w-full h-full -rotate-90">
             <circle
@@ -80,11 +79,12 @@
         </div>
       </div>
 
-      <div class="bg-slate-core__40 p-6 rounded-4xl border border-white/5">
-        <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 italic">
-          // Skill_Architecture
-        </h4>
-        <div #radarContainer class="w-full h-64 flex items-center justify-center"></div>
+      <div>
+        @if (vehicle() && biometrics(); as bio) {
+          <app-skill-radar-display
+            [vehicle]="vehicle()!"
+            [biometricInput]="bio"></app-skill-radar-display>
+        }
       </div>
     </div>
 
@@ -97,8 +97,7 @@
           <div #gForceContainer class="h-48 flex items-center justify-center"></div>
         </div>
 
-        <div
-          class="bg-slate-core__40 p-6 rounded-4xl border border-white/5 group hover:bg-slate-900/60 transition-all">
+        <div class="card-glass p-6 group hover:bg-slate-900/60 transition-all">
           <div class="flex justify-between items-start mb-6">
             <span class="text-[10px] font-black text-indigo-400 tracking-tighter uppercase">
               Fuel Analytics
@@ -120,8 +119,7 @@
         </div>
       </div>
 
-      <div
-        class="bg-slate-900/20 rounded-[40px] border border-white/5 p-8 relative overflow-hidden">
+      <div class="section-box">
         <div class="flex items-center justify-between mb-8">
           <h3 class="text-[11px] font-black tracking-[0.5em] text-slate-400 uppercase italic">
             // Threat_Registry // Infracciones
@@ -180,8 +178,7 @@
         </div>
       </div>
 
-      <div
-        class="bg-slate-900/20 rounded-[40px] border border-white/5 p-8 relative overflow-hidden group">
+      <div class="section-box group">
         <div class="flex items-center justify-between mb-6">
           <h3 class="text-[11px] font-black tracking-[0.5em] text-indigo-400 uppercase italic">
             // Analytics_Cloud_Sync // D3_Node

@@ -1,0 +1,13 @@
+@reference "tailwindcss";
+
+.card-glass {
+  @apply bg-slate-900/60 backdrop-blur-xl border-white/10 rounded-[48px] shadow-2xl;
+}
+
+.section-box {
+  @apply bg-slate-900/20 rounded-[40px] border border-white/5 p-8 relative overflow-hidden;
+}
+
+.section-header {
+  @apply text-[11px] font-black tracking-[0.5em] text-slate-400 uppercase italic mb-8;
+}

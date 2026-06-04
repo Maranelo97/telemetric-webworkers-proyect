@@ -3,8 +3,8 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 @Component({
   selector: 'app-data-loader',
   imports: [],
-  templateUrl: './dataLoader.html',
-  styleUrl: './dataLoader.css',
+  templateUrl: './data-loader.html',
+  styleUrl: './data-loader.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DataLoader {

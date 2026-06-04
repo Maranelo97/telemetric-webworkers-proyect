@@ -22,7 +22,7 @@
   <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-8">
     @for (item of store.vehicleWidgets(); track item.data.id) {
       <div
-        class="group relative bg-slate-core__40 border border-slate-800 rounded-2xl overflow-hidden hover:border-indigo-500/50 transition-all duration-500">
+        class="card-glass group relative  p-2 rounded shadow-md overflow-hidden hover:border-indigo-500/50 transition-all duration-500 hover:shadow-indigo-700">
         <div
           class="absolute inset-0 bg-linear-to-br from-indigo-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
@@ -52,11 +52,11 @@
           </h3>
 
           <div class="grid grid-cols-2 gap-4 mb-6">
-            <div class="bg-slate-950/50 p-3 rounded-xl border border-white/5">
+            <div class="bg-black/40 p-3 rounded-xl border border-white/5">
               <p class="text-[9px] text-slate-500 uppercase font-bold mb-1">Fuel Level</p>
               <p class="text-lg font-mono font-bold text-white">{{ item.data.metrics.fuel }}%</p>
             </div>
-            <div class="bg-slate-950/50 p-3 rounded-xl border border-white/5">
+            <div class="bg-black/40 p-3 rounded-xl border border-white/5">
               <p class="text-[9px] text-slate-500 uppercase font-bold mb-1">Engine RPM</p>
               <p class="text-lg font-mono font-bold text-white">
                 {{ item.data.metrics.rpm.toFixed(2) }}

@@ -1,7 +1,6 @@
 import {
   Component,
   ElementRef,
-  OnInit,
   ViewChild,
   input,
   inject,
@@ -9,7 +8,9 @@ import {
   effect,
   signal,
 } from '@angular/core';
-import { EngineService } from './engine-viewer.service';
+import * as THREE from 'three';
+import { ENGINE_PORT } from '../../../core/ports/output/engine.port';
+import { SceneManager } from '../../../infrastructure/driven/ThreeJs/scene.manager';
 import { EngineModelType } from '../../../shared/utils/genFleet';
 import { PlatformAdapter } from '../../../infrastructure/driven/Platform/platform.adapter';
 
@@ -19,72 +20,62 @@ import { PlatformAdapter } from '../../../infrastructure/driven/Platform/platfor
   templateUrl: './engine-viewer.html',
   styleUrl: './engine-viewer.css',
 })
-export class EngineViewer implements OnInit, OnDestroy {
+export class EngineViewer implements OnDestroy {
   @ViewChild('rendererContainer', { static: true }) container!: ElementRef;
 
-  private engineService = inject(EngineService);
+  private engine = inject(ENGINE_PORT);
   private platform = inject(PlatformAdapter);
+  private sceneManager!: SceneManager;
+  private currentModel?: THREE.Group;
 
-  // Inputs reactivos
   modelEngine = input.required<EngineModelType>();
   isCritical = input<boolean>(false);
 
-  // Estado de la UI
   public isLoading = signal(true);
   public lastError = signal<{ code: string; desc: string } | null>(null);
 
   private intervalId: any;
 
   constructor() {
-    // El efecto reacciona automáticamente si el modelEngine cambia
-    // sin necesidad de lógica extra en el ngOnInit
     effect(() => {
       const model = this.modelEngine();
       if (model && this.platform.isBrowser) {
-        this.startEngineProcess(model);
+        this.initViewer(model);
       }
     });
   }
 
-  ngOnInit() {}
+  private async initViewer(modelName: EngineModelType) {
+    this.sceneManager = new SceneManager(this.container.nativeElement);
+    this.sceneManager.update();
 
-  private async startEngineProcess(model: EngineModelType) {
-    // Esperamos un frame para asegurar que el contenedor DOM esté listo
-    setTimeout(async () => {
-      if (!this.container?.nativeElement) return;
-
-      // 1. Inicializamos la infraestructura (SceneManager interno)
-      this.engineService.init(this.container);
-
-      // 2. Cargamos el modelo usando la nueva lógica con caché y estrategia
-      await this.engineService.loadEngine(model, () => {
-        // 3. Finalizamos carga y arrancamos telemetría
-        this.isLoading.set(false);
-        this.startLoop();
-      });
-    }, 100);
+    this.currentModel = await this.engine.loadModel(modelName);
+    this.currentModel.name = 'currentEngine';
+    this.sceneManager.scene.add(this.currentModel);
+    
+    this.isLoading.set(false);
+    this.startLoop();
   }
 
   private startLoop() {
     if (this.intervalId) clearInterval(this.intervalId);
 
     this.intervalId = setInterval(() => {
-      // Ejecuta la representación visual de la falla en el 3D
-      this.engineService.simulateFailure();
+      if (!this.currentModel) return;
 
-      // Actualiza el panel de diagnóstico (Placeholder dinámico)
+      // Simulación lógica - Debería estar en un UseCase si crece
+      const componentName = 'part_' + Math.floor(Math.random() * 5); 
+      this.engine.highlightComponent(this.currentModel, componentName, 0xff0000);
+
       this.lastError.set({
         code: `ERR_${Math.random().toString(36).substring(7).toUpperCase()}`,
-        desc: this.isCritical()
-          ? 'Falla crítica detectada: Temperatura fuera de rango operativo.'
-          : 'Aviso preventivo: Vibración inusual en el bloque del motor.',
+        desc: this.isCritical() ? 'Falla crítica detectada' : 'Aviso preventivo',
       });
     }, 4000);
   }
 
   ngOnDestroy() {
     if (this.intervalId) clearInterval(this.intervalId);
-    // Limpia memoria de Three.js y detiene el render loop
-    this.engineService.destroy();
+    this.sceneManager?.dispose();
   }
 }
